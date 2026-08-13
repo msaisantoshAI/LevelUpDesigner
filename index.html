@@ -33,7 +33,7 @@
     --line: #D7CDBB;
     --line-subtle: #EAE2D2;
     
-    --card-shadow-elevated: 0 18px 40px -12px rgba(17, 26, 36, 0.12), 0 0 0 1px var(--border-card), 0 2px 0 var(--paper-edge);
+    --card-shadow-elevated: none;
 
     /* Standardized Typography Font Families */
     --font-heading: 'Fraunces', serif;
@@ -434,14 +434,14 @@
     z-index: 0;
   }
 
-  /* Scaled-Up Card with Contained Paper Shadow (Aa Mode) */
+  /* Scaled-Up Flat Tactile Paper Card (Aa Mode, No Shadow) */
   .card {
     position: relative;
     background: #FFFDF9 url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.04"/></svg>');
     border: 1.5px solid var(--border-card);
-    border-radius: 6px;
+    border-radius: 8px;
     padding: clamp(18px, 3vh, 30px) clamp(24px, 3.8vw, 38px) clamp(16px, 2.5vh, 24px);
-    box-shadow: 0 3px 10px rgba(17, 26, 36, 0.05), 0 1px 3px rgba(0,0,0,0.02);
+    box-shadow: none !important;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -2076,7 +2076,7 @@
       border-radius: 14px;
       border: 1.5px solid #D5CBBA;
       background: #FFFDF9;
-      box-shadow: 0 4px 16px rgba(17, 26, 36, 0.05);
+      box-shadow: none !important;
       width: 100%;
       box-sizing: border-box;
     }
@@ -4308,7 +4308,6 @@ Respond strictly in valid JSON with no backticks matching this schema:
   function toggleTimerPlayPause() {
     isTimerRunning = !isTimerRunning;
     updateLiveTimerUI();
-    showToast(isTimerRunning ? 'Timer Resumed' : 'Timer Paused', 'info');
   }
 
   function restartTimer() {
@@ -4317,9 +4316,8 @@ Respond strictly in valid JSON with no backticks matching this schema:
     } else {
       sessionSeconds = 0;
     }
-    isTimerRunning = true;
+    isTimerRunning = false; // User must click Start / Play button to start!
     updateLiveTimerUI();
-    showToast('Timer Reset', 'info');
   }
 
   if (timerPlayPauseBtn) timerPlayPauseBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleTimerPlayPause(); });
@@ -4342,10 +4340,9 @@ Respond strictly in valid JSON with no backticks matching this schema:
       modeStopwatchBtn.classList.add('active');
       modeCountdownBtn.classList.remove('active');
       sessionSeconds = 0;
-      isTimerRunning = true;
+      isTimerRunning = false; // User must click start
       updateLiveTimerUI();
       timerSettingsPopover.classList.remove('open');
-      showToast('Switched to Stopwatch (Count Up)', 'info');
     });
   }
 
@@ -4365,12 +4362,11 @@ Respond strictly in valid JSON with no backticks matching this schema:
       timerMode = 'countdown';
       timerInitialDuration = mins * 60;
       sessionSeconds = timerInitialDuration;
-      isTimerRunning = true;
+      isTimerRunning = false; // User must click start
       modeCountdownBtn.classList.add('active');
       modeStopwatchBtn.classList.remove('active');
       updateLiveTimerUI();
       timerSettingsPopover.classList.remove('open');
-      showToast(`Countdown set to ${mins} minutes`, 'success');
     });
   });
 
@@ -4390,12 +4386,11 @@ Respond strictly in valid JSON with no backticks matching this schema:
       timerMode = 'countdown';
       timerInitialDuration = total;
       sessionSeconds = total;
-      isTimerRunning = true;
+      isTimerRunning = false; // User must click start
       modeCountdownBtn.classList.add('active');
       modeStopwatchBtn.classList.remove('active');
       updateLiveTimerUI();
       timerSettingsPopover.classList.remove('open');
-      showToast(`Custom countdown set to ${formatTimerDigits(total)}`, 'success');
     });
   }
 
