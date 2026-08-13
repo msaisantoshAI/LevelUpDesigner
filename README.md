@@ -40,8 +40,8 @@ An interactive daily learning, practice, and skill-building web application desi
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/msaisantoshAI/LevelUp-Designer.git
-cd LevelUp-Designer
+git clone https://github.com/msaisantoshAI/LevelUpDesigner.git
+cd LevelUpDesigner
 ```
 
 ### 2. Install dependencies & run

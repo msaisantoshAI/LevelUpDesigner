@@ -13,7 +13,7 @@ async function pushRepo(token) {
     console.log('Branch note:', e.message);
   }
 
-  console.log('Attempting push to https://github.com/msaisantoshAI/LevelUp-Designer.git (branch: main)...');
+  console.log('Attempting push to https://github.com/msaisantoshAI/LevelUpDesigner.git (branch: main)...');
 
   try {
     const pushResult = await git.push({
@@ -33,7 +33,7 @@ async function pushRepo(token) {
     });
     console.log('Push result:', pushResult);
     if (pushResult && pushResult.ok) {
-      console.log('\n🎉 SUCCESS! Pushed successfully to https://github.com/msaisantoshAI/LevelUp-Designer.git !');
+      console.log('\n🎉 SUCCESS! Pushed successfully to https://github.com/msaisantoshAI/LevelUpDesigner.git !');
     }
   } catch (err) {
     console.error('Push error:', err.message);

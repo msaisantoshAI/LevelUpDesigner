@@ -59,7 +59,7 @@ async function initAndCommit() {
   console.log('[3/4] Committed files. Commit SHA:', sha);
 
   // 4. Set remote URL
-  const remoteUrl = 'https://github.com/msaisantoshAI/LevelUp-Designer.git';
+  const remoteUrl = 'https://github.com/msaisantoshAI/LevelUpDesigner.git';
   try {
     await git.addRemote({
       fs,
