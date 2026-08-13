@@ -1,0 +1,3383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LevelUP Designers — Product Design Mastery</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bangers&family=Fredoka:wght@600;700;800;900&display=swap');
+
+  /* =========================================================================
+     DESIGN SYSTEM TOKENS & TYPOGRAPHY SCALES (Aa Title / Sentence Case Mode)
+     ========================================================================= */
+  :root {
+    --paper: #F6F3EC;
+    --paper-card: #FFFDF9;
+    --paper-edge: #EAE3D2;
+    --ink: #111A24;
+    --ink-soft: #3E4B5B;
+    --ink-muted: #6C7D8E;
+    --gold: #A8761E;
+    --gold-light: #F7EEDB;
+    --gold-warm: #D97706;
+    --green: #1B733F;
+    --green-light: #E2F3E8;
+    --purple: #552F9E;
+    --purple-light: #F0EBFA;
+    
+    /* Refined tactile stroke colors */
+    --border-card: #D5CBBA;
+    --border-subtle: #E2D9C8;
+    --border-light: #ECE5D7;
+    --line: #D7CDBB;
+    --line-subtle: #EAE2D2;
+    
+    --card-shadow-elevated: 0 18px 40px -12px rgba(17, 26, 36, 0.12), 0 0 0 1px var(--border-card), 0 2px 0 var(--paper-edge);
+
+    /* Standardized Typography Font Families */
+    --font-heading: 'Fraunces', serif;
+    --font-slab: 'Roboto Slab', serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden; /* Perfect 100% single-screen desktop fit above the fold */
+    background-color: var(--paper);
+    font-family: var(--font-slab);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  /* Interactive Background Canvas (Warm Amber Wave Grid) */
+  #interactiveCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Top Full-Width Header Bar */
+  .site-header {
+    width: 100%;
+    height: 54px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    background: rgba(246, 243, 236, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-card);
+    position: relative;
+    z-index: 50;
+    flex-shrink: 0;
+  }
+
+  /* Top Left Brand Badge with Logo */
+  .brand-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-slab);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    padding: 4px 14px 4px 8px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .brand-badge:hover {
+    background: #FFF;
+    border-color: var(--gold);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 118, 30, 0.12);
+  }
+
+  .brand-logo-img {
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    mix-blend-mode: multiply;
+    filter: contrast(1.15);
+    border-radius: 4px;
+  }
+
+  /* Top Right Controls (Aa Case) */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ai-status-pill {
+    font-family: var(--font-slab);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    background: var(--purple-light);
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    padding: 6px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+
+  .ai-status-pill:hover {
+    background: var(--purple);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(85, 47, 158, 0.2);
+  }
+
+  .history-trigger-btn {
+    font-family: var(--font-slab);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    color: var(--ink);
+    padding: 6px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.15s ease;
+  }
+
+  .history-trigger-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    transform: translateY(-1px);
+  }
+
+  .history-badge {
+    background: var(--gold);
+    color: #fff;
+    padding: 1px 7px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  /* Desk Container (Viewport-Adaptive & 100% Above the Fold) */
+  .desk {
+    width: 100%;
+    max-width: 800px;
+    height: calc(100vh - 54px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(6px, 1.2vh, 12px) 24px clamp(8px, 1.4vh, 14px);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Masthead — Product Design Mastery (Aa Mode) */
+  .masthead {
+    text-align: center;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .masthead h1 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: clamp(26px, 3.8vh, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    text-transform: none; /* Aa mode */
+    margin-bottom: 2px;
+  }
+
+  .masthead .eyebrow {
+    font-family: var(--font-slab);
+    font-size: clamp(12.5px, 1.6vh, 14px);
+    font-weight: 500;
+    text-transform: none; /* Aa mode */
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .masthead .eyebrow::before, .masthead .eyebrow::after {
+    content: "—";
+    color: var(--gold);
+  }
+
+  /* Selectors Container (Expanded Field Card) */
+  .selectors-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    border-radius: 9px;
+    padding: clamp(8px, 1.3vh, 12px) 16px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.03);
+    flex-shrink: 0;
+  }
+
+  .field-of-study-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1.35;
+  }
+
+  .field-label {
+    font-family: var(--font-slab);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .field-select {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    background: #FFF;
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .field-select:focus { border-color: var(--gold); }
+
+  .level-select-row {
+    display: flex;
+    align-items: center;
+    flex: 1;
+  }
+
+  .level-select {
+    display: flex;
+    gap: 4px;
+    background: var(--paper);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    padding: 3px;
+    width: 100%;
+  }
+
+  .level-btn {
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    padding: 7px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    transition: all 0.15s ease;
+  }
+
+  .level-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+
+  /* Progress Bar Container */
+  .mastery-progress-card {
+    width: 100%;
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    padding: clamp(5px, 0.9vh, 8px) 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    flex-shrink: 0;
+  }
+
+  .progress-head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    margin-bottom: 4px;
+  }
+
+  .progress-bar-track {
+    width: 100%;
+    height: 7.5px;
+    background: var(--paper);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), #24824F);
+    border-radius: 999px;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Celebration Banner */
+  .level-complete-banner {
+    display: none;
+    width: 100%;
+    background: var(--green-light);
+    border: 1px solid var(--green);
+    border-radius: 6px;
+    padding: 8px 14px;
+    color: var(--green);
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+  .level-complete-banner.active { display: block; }
+  .banner-actions { display: flex; gap: 6px; margin-top: 4px; }
+  .banner-next-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-family: var(--font-slab);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: none; /* Aa mode */
+  }
+
+  /* Card Deck Stage (Clean Paper Stack) */
+  .card-stage {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 230px;
+    max-height: 390px;
+    perspective: 1200px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-underlay {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    bottom: -5px;
+    background: #EBE4D2;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    z-index: 1;
+  }
+
+  .card-underlay-2 {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: -10px;
+    background: #E2D8BF;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    z-index: 0;
+  }
+
+  /* Scaled-Up Card with Generous Typography (Aa Mode) */
+  .card {
+    position: relative;
+    background: #FFFDF9 url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.04"/></svg>');
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    padding: clamp(18px, 3vh, 30px) clamp(24px, 3.8vw, 38px) clamp(16px, 2.5vh, 24px);
+    box-shadow: var(--card-shadow-elevated), 0 24px 48px -12px rgba(17, 26, 36, 0.2);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 2;
+    transform-origin: top center;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 7px;
+    background: repeating-linear-gradient(90deg,
+      transparent 0, transparent 4px,
+      var(--line) 4px, var(--line) 8px,
+      transparent 8px, transparent 12px
+    );
+    border-top: 1.5px dashed var(--border-subtle);
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: clamp(4px, 1vh, 8px);
+  }
+
+  .card-domain-badge {
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    text-transform: none; /* Aa mode */
+    background: var(--paper);
+    border: 1px solid var(--border-subtle);
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .badge-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-status-pill {
+    font-family: var(--font-slab);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+  }
+
+  .card-status-pill.status-new {
+    background: var(--gold-light);
+    color: var(--gold);
+    border: 1px solid rgba(168, 118, 30, 0.3);
+  }
+
+  .card-status-pill.status-done {
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+
+  .card-status-pill.status-ai {
+    background: var(--purple-light);
+    color: var(--purple);
+    border: 1px solid var(--purple);
+  }
+
+  .topic-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(22px, 3vh, 28px);
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: clamp(4px, 1vh, 10px) 0 clamp(6px, 1.2vh, 10px);
+    text-transform: none; /* Aa mode */
+  }
+
+  .topic-insight-box {
+    background: #FAF7F0;
+    border-left: 3.5px solid var(--gold);
+    border-top: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    padding: clamp(9px, 1.4vh, 14px) clamp(14px, 2vw, 18px);
+    margin: clamp(4px, 1vh, 8px) 0 clamp(6px, 1.2vh, 10px);
+    border-radius: 0 5px 5px 0;
+    font-family: var(--font-sans);
+    font-size: clamp(13px, 1.65vh, 14.5px);
+    line-height: 1.55;
+    color: #2D3A47;
+  }
+
+  .topic-insight-box strong {
+    color: var(--ink);
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: none; /* Aa mode */
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .topic-action-prompt {
+    font-family: var(--font-sans);
+    font-size: clamp(12.5px, 1.55vh, 13.5px);
+    color: var(--ink-soft);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .card-foot {
+    margin-top: clamp(6px, 1.2vh, 12px);
+    padding-top: clamp(6px, 1vh, 10px);
+    border-top: 1px dashed var(--border-subtle);
+    font-family: var(--font-slab);
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    text-transform: none; /* Aa mode */
+  }
+
+  .stamp-done {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: var(--green);
+    border: 2px solid var(--green);
+    padding: 4px 11px;
+    border-radius: 4px;
+    transform: rotate(-7deg);
+    background: rgba(226, 243, 232, 0.95);
+    text-transform: none; /* Aa mode */
+    pointer-events: none;
+  }
+
+  /* Scaled Action Buttons (Aa Mode) */
+  .actions-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .prev-btn {
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    color: var(--ink);
+    padding: clamp(11px, 1.7vh, 15px) clamp(16px, 2.2vw, 20px);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-slab);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: all 0.15s ease;
+  }
+  .prev-btn:hover:not(:disabled) { background: #EAE3D0; transform: translateY(-1px); }
+  .prev-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .draw-btn {
+    flex: 1.6;
+    font-family: var(--font-slab);
+    font-weight: 700;
+    font-size: clamp(13px, 1.65vh, 14.5px);
+    text-transform: none; /* Aa mode */
+    background: var(--ink);
+    color: #FFFDF9;
+    border: 1px solid var(--ink);
+    padding: clamp(12px, 1.8vh, 15px) clamp(18px, 2.6vw, 26px);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(17, 26, 36, 0.16);
+  }
+  .draw-btn:hover { background: #000; border-color: #000; transform: translateY(-1px); }
+  .draw-btn:active { transform: translateY(1px); }
+  .draw-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .mark-read-btn {
+    flex: 1;
+    font-family: var(--font-slab);
+    font-weight: 700;
+    font-size: clamp(12.5px, 1.6vh, 14px);
+    text-transform: none; /* Aa mode */
+    background: #FFFDF9;
+    color: var(--green);
+    border: 1.5px solid var(--green);
+    padding: clamp(12px, 1.8vh, 15px) clamp(14px, 2vw, 18px);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(27, 115, 63, 0.08);
+    transition: all 0.15s ease;
+  }
+  .mark-read-btn:hover:not(:disabled) {
+    background: var(--green);
+    color: #FFF;
+    transform: translateY(-1px);
+  }
+  .mark-read-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .resources-action-btn {
+    flex: 0.9;
+    font-family: var(--font-slab);
+    font-weight: 700;
+    font-size: clamp(12.5px, 1.6vh, 14px);
+    text-transform: none; /* Aa mode */
+    background: #FFFDF9;
+    color: var(--purple);
+    border: 1.5px solid var(--purple);
+    padding: clamp(12px, 1.8vh, 15px) clamp(14px, 2vw, 18px);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(85, 47, 158, 0.08);
+    transition: all 0.15s ease;
+  }
+  .resources-action-btn:hover {
+    background: var(--purple);
+    color: #FFF;
+    transform: translateY(-1px);
+  }
+
+  /* Toast Notification */
+  .toast-container {
+    position: fixed;
+    top: 66px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 8px 18px;
+    border-radius: 999px;
+    font-family: var(--font-slab);
+    font-size: 12.5px;
+    font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    animation: toastSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.warning {
+    background: #FFFDF5;
+    color: #8C5800;
+    border: 1px solid #D97706;
+  }
+  .toast.success {
+    background: var(--green-light);
+    color: var(--green);
+    border: 1px solid var(--green);
+  }
+  .toast.error {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #EF4444;
+  }
+  @keyframes toastSlideDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .sound-toggle {
+    background: transparent;
+    border: none;
+    color: var(--ink-muted);
+    font-family: var(--font-slab);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    text-transform: none; /* Aa mode */
+  }
+  .sound-toggle:hover { color: var(--ink); text-decoration: underline; }
+
+  /* =========================================================================
+     BOTTOM RIGHT CORNER: CREATED BY @SAISANTOSH WITH SOCIAL LINKS
+     ========================================================================= */
+  .creator-corner-badge {
+    position: fixed;
+    bottom: 12px;
+    right: 18px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    padding: 5px 12px 5px 12px;
+    border-radius: 999px;
+    box-shadow: 0 3px 12px rgba(17, 26, 36, 0.08);
+    font-family: var(--font-slab);
+    transition: all 0.18s ease;
+  }
+
+  .creator-corner-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(17, 26, 36, 0.12);
+    border-color: var(--ink-soft);
+  }
+
+  .creator-heading {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  .creator-heading:hover { color: var(--gold); }
+
+  .creator-social-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 6px;
+    border-left: 1px solid var(--border-subtle);
+  }
+
+  .social-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+  .social-icon-btn:hover {
+    color: var(--ink);
+    background: var(--paper);
+    transform: scale(1.12);
+  }
+
+  .social-svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  /* =========================================================================
+     LIVE TICKING TIMER WIDGET (Directly Above Sai Santosh Badge)
+     ========================================================================= */
+  .corner-timer-widget {
+    position: fixed;
+    bottom: 48px;
+    right: 18px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: #FFFDF9;
+    border: 1px solid var(--border-card);
+    padding: 4px 10px 4px 9px;
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(17, 26, 36, 0.08);
+    font-family: var(--font-slab);
+    font-size: 11.5px;
+    color: var(--ink);
+    transition: all 0.18s ease;
+    user-select: none;
+  }
+
+  .corner-timer-widget:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(17, 26, 36, 0.12);
+    border-color: var(--gold);
+  }
+
+  .timer-dot {
+    width: 6px;
+    height: 6px;
+    background: #10B981;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.8);
+    animation: livePulse 2s infinite ease-in-out;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(0.85); opacity: 0.45; }
+  }
+
+  .timer-label {
+    font-weight: 700;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .timer-digits {
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-slab);
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .timer-pip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--paper);
+    border: 1px solid var(--border-subtle);
+    color: var(--ink-soft);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 2px;
+    transition: all 0.15s ease;
+    padding: 0;
+  }
+
+  .timer-pip-btn:hover {
+    background: var(--ink);
+    color: #FFF;
+    border-color: var(--ink);
+    transform: scale(1.08);
+  }
+
+  /* =========================================================================
+     FUNNY DESIGNERS EDITION LAPTOP STICKERS (Background Interactive Physics)
+     ========================================================================= */
+  /* =========================================================================
+     GRAPHITE BOLD POP STICKERS (Ultra-Legible, No Icons, High Contrast)
+     ========================================================================= */
+  .stickers-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .designer-sticker {
+    position: absolute;
+    pointer-events: auto;
+    cursor: grab;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 15px;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: -0.015em;
+    color: #111A24; /* Bold Graphite */
+    border: 3.5px solid #FFFFFF;
+    box-shadow: 0 10px 24px rgba(17, 26, 36, 0.16), 0 2px 6px rgba(0,0,0,0.1);
+    will-change: transform;
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+    touch-action: none;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .designer-sticker:hover {
+    box-shadow: 0 16px 34px rgba(17, 26, 36, 0.26), 0 5px 12px rgba(0,0,0,0.15);
+    z-index: 40 !important;
+    filter: brightness(1.08) contrast(1.05);
+  }
+
+  .designer-sticker:active {
+    cursor: grabbing;
+    transform: scale(1.08) !important;
+  }
+
+  /* Sticker 1: "Figma is my cardio." (Lemon Pop Cloud) */
+  .sticker-cardio {
+    background: #FFE600;
+    color: #111A24;
+    border-radius: 18px 6px 18px 6px;
+    box-shadow: 0 10px 24px rgba(255, 230, 0, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 2: "Just one tiny change." (Coral Comic Burst) */
+  .sticker-tinychange {
+    background: #FF4757;
+    color: #FFFFFF;
+    border-radius: 14px 24px 14px 24px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 24px rgba(255, 71, 87, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 3: "learn Ai" (Vivid Cyan Cyber Badge) */
+  .sticker-learnai {
+    background: #00E5FF;
+    color: #111A24;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(0, 229, 255, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 4: "Final_final_v7.fig" (Bright Orange Speech Bubble) */
+  .sticker-finalv7 {
+    background: #FFA502;
+    color: #111A24;
+    border-radius: 14px 14px 14px 2px;
+    box-shadow: 0 10px 24px rgba(255, 165, 2, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 5: "Can u do it for free?" (Hot Pink Warning Badge) */
+  .sticker-forfree {
+    background: #FF2A6D;
+    color: #FFFFFF;
+    border-radius: 999px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 24px rgba(255, 42, 109, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 6: "I can do it better" (Electric Mint Ribbon) */
+  .sticker-better {
+    background: #2ED573;
+    color: #111A24;
+    border-radius: 6px;
+    box-shadow: 0 10px 24px rgba(46, 213, 115, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 7: "I need Coffee" (Sky Blue Rounded Badge) */
+  .sticker-coffee {
+    background: #70A1FF;
+    color: #111A24;
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(112, 161, 255, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 8: "Ai will replace you" (Synthwave Violet Oval) */
+  .sticker-replace {
+    background: #A55EEA;
+    color: #FFFFFF;
+    border-radius: 999px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 24px rgba(165, 94, 234, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 9: "Make it POP!" (Punchy Neon Lime Starburst) */
+  .sticker-makeitpop {
+    background: #26DE81;
+    color: #111A24;
+    border-radius: 16px 4px 16px 4px;
+    box-shadow: 0 10px 24px rgba(38, 222, 129, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 10: "0 Errors, 1000 UX Issues" (Golden Yellow Pill) */
+  .sticker-uxissues {
+    background: #FED330;
+    color: #111A24;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(254, 211, 48, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 11: "Cmd + Z is Life" (Retro Cyan Keycap) */
+  .sticker-cmdz {
+    background: #45AAF2;
+    color: #FFFFFF;
+    border-radius: 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 24px rgba(69, 170, 242, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Sticker 12: "Auto-Layout Everything" (Warm Coral Ribbon) */
+  .sticker-autolayout {
+    background: #FD9644;
+    color: #111A24;
+    border-radius: 12px 4px 12px 4px;
+    box-shadow: 0 10px 24px rgba(253, 150, 68, 0.35), 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  /* Tear Animations */
+  .card-settle {
+    animation: cardSettle 0.36s cubic-bezier(0.18, 0.89, 0.32, 1.15) forwards;
+  }
+
+  @keyframes cardSettle {
+    0% { transform: scale(0.96) translateY(10px); opacity: 0.8; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+  }
+
+  .paper-tearing-off {
+    position: absolute !important;
+    top: 0; left: 0; right: 0;
+    z-index: 10 !important;
+    pointer-events: none;
+    animation: tearOffDown 0.62s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform-origin: top left;
+  }
+
+  @keyframes tearOffDown {
+    0% { transform: rotate(0deg) translateY(0); opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    20% { transform: rotate(3deg) translateY(8px); clip-path: polygon(0 4px, 100% 0, 100% 100%, 0 100%); }
+    55% { transform: rotate(8deg) translateY(60px); opacity: 0.95; }
+    100% { transform: rotate(16deg) translateY(320px) scale(0.92); opacity: 0; }
+  }
+
+  /* Reading History Drawer (Aa Mode) */
+  .history-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(17, 26, 36, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .history-overlay.open { display: flex; justify-content: flex-end; opacity: 1; }
+
+  .history-drawer {
+    width: 100%;
+    max-width: 480px;
+    height: 100%;
+    background: var(--paper-card);
+    box-shadow: -8px 0 36px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: var(--font-slab);
+  }
+  .history-overlay.open .history-drawer { transform: translateX(0); }
+
+  .drawer-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border-card);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FFFDF9;
+  }
+
+  .drawer-title { font-family: var(--font-heading); font-size: 22px; font-weight: 700; text-transform: none; }
+
+  .drawer-close-btn {
+    background: #FFF;
+    border: 1px solid var(--border-card);
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink);
+  }
+  .drawer-close-btn:hover { background: var(--ink); color: #fff; }
+
+  .drawer-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--paper);
+  }
+
+  .drawer-tab {
+    flex: 1;
+    padding: 11px 12px;
+    text-align: center;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .drawer-tab.active {
+    background: #FFFDF9;
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+    font-weight: 700;
+  }
+
+  .drawer-progress-box {
+    padding: 12px 20px;
+    background: #FAF7F0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .drawer-search-wrap {
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .drawer-search-input {
+    width: 100%;
+    font-family: var(--font-slab);
+    font-size: 13px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    background: #FFF;
+    color: var(--ink);
+  }
+  .drawer-search-input:focus { outline: none; border-color: var(--ink); }
+
+  .history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .history-card {
+    background: #FFFDF9;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .history-card:hover { border-color: var(--border-card); transform: translateY(-1px); }
+
+  .history-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: none; /* Aa mode */
+  }
+
+  .history-card-title {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--ink);
+    text-transform: none;
+  }
+
+  .history-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border-subtle);
+    font-size: 11px;
+    color: var(--ink-muted);
+  }
+
+  .card-action-btn {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: var(--font-slab);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: none;
+  }
+  .card-action-btn.delete { color: #A82828; border-color: rgba(168, 40, 40, 0.3); }
+  .card-action-btn.restore { color: var(--green); border-color: rgba(27, 115, 63, 0.4); }
+
+  .history-empty {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .history-empty span { font-size: 28px; display: block; margin-bottom: 8px; }
+
+  .drawer-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border-card);
+    background: #FFFDF9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .clear-all-btn {
+    background: #FFF;
+    border: 1px solid #A82828;
+    color: #A82828;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .clear-all-btn:hover { background: #A82828; color: #FFF; }
+
+  /* Universal AI Settings Modal */
+  .gemini-modal-overlay, .confirm-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(17, 26, 36, 0.55);
+    backdrop-filter: blur(5px);
+    z-index: 120;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .gemini-modal-overlay.open, .confirm-modal-overlay.open { display: flex; }
+
+  .gemini-modal, .confirm-modal {
+    background: var(--paper-card);
+    border: 1px solid var(--border-card);
+    border-radius: 8px;
+    max-width: 520px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+    box-shadow: 0 24px 60px rgba(17, 26, 36, 0.2);
+    font-family: var(--font-sans);
+  }
+
+  .modal-head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+
+  .modal-title {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    text-transform: none;
+  }
+
+  .provider-select-wrap { margin-bottom: 14px; }
+
+  .form-label {
+    font-family: var(--font-slab);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    color: var(--ink);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .provider-select {
+    width: 100%;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 12px;
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    background: #FFF;
+    color: var(--ink);
+  }
+
+  .provider-guide-box {
+    background: #FAF7F0;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .input-with-toggle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .api-input {
+    width: 100%;
+    font-family: var(--font-slab);
+    font-size: 13px;
+    padding: 9px 64px 9px 12px;
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    background: #FFF;
+    color: var(--ink);
+  }
+
+  .show-hide-btn {
+    position: absolute;
+    right: 6px;
+    background: transparent;
+    border: none;
+    font-family: var(--font-slab);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: none;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+
+  .test-status-box {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    display: none;
+  }
+  .test-status-box.success { display: block; background: var(--green-light); color: var(--green); border: 1px solid var(--green); }
+  .test-status-box.error { display: block; background: #FDE8E8; color: #993333; border: 1px solid #993333; }
+
+  .modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-subtle);
+    gap: 8px;
+  }
+
+  .modal-btn-test {
+    background: #FFF;
+    border: 1px solid var(--border-card);
+    color: var(--ink);
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .modal-btn-test:hover { background: #ECE5D4; }
+
+  .modal-btn-save {
+    background: var(--purple);
+    color: #fff;
+    border: 1px solid var(--purple);
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none; /* Aa mode */
+    padding: 9px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(85, 47, 158, 0.2);
+  }
+  .modal-btn-save:hover { background: #452485; }
+
+  /* =========================================================================
+     RESPONSIVE MEDIA QUERIES: TABLET & MOBILE VIEWPORTS
+     ========================================================================= */
+  
+  /* Tablet (iPad & Medium screens: 601px - 899px) */
+  @media (max-width: 899px) and (min-width: 601px) {
+    .site-header { padding: 0 20px; height: 50px; }
+    .desk { max-width: 95%; padding: 8px 16px 10px; }
+    .selectors-container { gap: 10px; padding: 8px 12px; }
+    .field-select { font-size: 13px; }
+    .level-btn { font-size: 11.5px; padding: 6px 10px; }
+    .topic-title { font-size: 23px; }
+    .topic-insight-box { font-size: 13.5px; }
+    .creator-corner-badge { bottom: 8px; right: 12px; font-size: 11px; }
+  }
+
+  /* Mobile Devices (< 600px) */
+  @media (max-width: 600px) {
+    html, body {
+      height: auto;
+      max-height: none;
+      overflow-y: auto; /* Natural smooth scroll on mobile */
+    }
+
+    .site-header {
+      padding: 0 16px;
+      height: 48px;
+    }
+
+    .brand-badge {
+      font-size: 13.5px;
+      padding: 3px 10px 3px 6px;
+    }
+    .brand-logo-img { width: 22px; height: 22px; }
+
+    .ai-status-pill, .history-trigger-btn {
+      font-size: 11px;
+      padding: 5px 10px;
+    }
+
+    .desk {
+      height: auto;
+      padding: 12px 14px 60px; /* Extra bottom padding for creator badge */
+      gap: 12px;
+      justify-content: flex-start;
+    }
+
+    .masthead h1 { font-size: 22px; }
+    .masthead .eyebrow { font-size: 12px; }
+
+    .selectors-container {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px 12px;
+    }
+
+    .field-of-study-row {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .level-select-row { width: 100%; }
+
+    .card-stage { min-height: 290px; }
+
+    .card {
+      padding: 20px 16px 16px;
+      min-height: 280px;
+    }
+
+    .topic-title { font-size: 20px; }
+    .topic-insight-box { font-size: 13px; padding: 10px 12px; }
+
+    .actions-row {
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .prev-btn {
+      order: 1;
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+
+    .draw-btn {
+      order: 2;
+      flex: 2;
+      padding: 12px 16px;
+      font-size: 13px;
+    }
+
+    .mark-read-btn {
+      order: 3;
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 13px;
+    }
+
+    .history-drawer { max-width: 100%; }
+
+    .creator-corner-badge {
+      bottom: 8px;
+      right: 8px;
+      padding: 4px 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Interactive Background Canvas (Warm Amber Wave Grid) -->
+  <canvas id="interactiveCanvas"></canvas>
+
+  <!-- Funny Designers Edition Laptop Stickers Layer -->
+  <div class="stickers-layer" id="stickersLayer"></div>
+
+  <!-- Top Full-Width Header Bar (Aa Mode) -->
+  <header class="site-header">
+    <div class="brand-badge">
+      <img src="logo.png" alt="LevelUP Designers Logo" class="brand-logo-img" />
+      <span>LevelUP Designers</span>
+    </div>
+    <div class="header-actions">
+      <button class="ai-status-pill" id="aiSetupBtn" title="Connect Gemini, OpenAI, Claude, or Groq API">
+        <span id="aiPillText">AI Setup</span>
+      </button>
+      <button class="history-trigger-btn" id="openHistoryBtn" aria-label="Open Reading Journal">
+        <span>Journal</span>
+        <span class="history-badge" id="historyBadge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Centered Scaled-Up Desk Container -->
+  <main class="desk">
+    <!-- Masthead with Updated Title & Subtitle (Aa Mode) -->
+    <div class="masthead">
+      <h1>Product Design Mastery</h1>
+      <div class="eyebrow">An Interactive Learning & Practice Deck</div>
+    </div>
+
+    <!-- Selectors: Expanded Field of Study & Level Select -->
+    <div class="selectors-container">
+      <div class="field-of-study-row">
+        <label class="field-label" for="fieldOfStudySelect">Field of study:</label>
+        <select class="field-select" id="fieldOfStudySelect">
+          <option value="Product Design">Product Design (General & End-to-End)</option>
+          <option value="UI Design & Design Systems">UI Design & Design Systems</option>
+          <option value="UX Research & Usability">UX Research & Usability Testing</option>
+          <option value="Customer Experience (CX) Design">Customer Experience (CX) Design</option>
+          <option value="UX Psychology & Behavioral Design">UX Psychology & Behavioral Design</option>
+          <option value="Growth Product Design & Monetization">Growth Product Design & Monetization</option>
+          <option value="AI Product & Agentic UX">AI Product & Agentic UX</option>
+          <option value="Enterprise & B2B SaaS Design">Enterprise & B2B SaaS Design</option>
+          <option value="Interaction & Motion Design">Interaction & Motion Design</option>
+          <option value="Service Design & Journey Mapping">Service Design & Journey Mapping</option>
+          <option value="Information Architecture (IA)">Information Architecture (IA) & Content Strategy</option>
+          <option value="Design Operations (DesignOps)">Design Operations (DesignOps)</option>
+          <option value="Accessibility & Inclusive Design">Accessibility & Inclusive Design (WCAG 2.2)</option>
+        </select>
+      </div>
+
+      <div class="level-select-row">
+        <div class="level-select" role="group" aria-label="Select difficulty level">
+          <button class="level-btn active" data-level="beginner">Beginner</button>
+          <button class="level-btn" data-level="intermediate">Intermediate</button>
+          <button class="level-btn" data-level="advanced">Advanced</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mastery Progress Bar Card (Aa Mode) -->
+    <div class="mastery-progress-card">
+      <div class="progress-head-row">
+        <span id="progressLevelLabel">Beginner Mastery</span>
+        <span id="progressStatsLabel">0 / 6 Completed (0%)</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+
+    <!-- Level Complete Celebration Banner -->
+    <div class="level-complete-banner" id="levelCompleteBanner">
+      <strong>Congratulations! You completed 100% of this tier!</strong>
+      <div class="banner-actions">
+        <button class="banner-next-btn" id="bannerLevelUpBtn">Shift to next level</button>
+      </div>
+    </div>
+
+    <!-- Card Deck Stage with Clean Paper Underlays & Active Card -->
+    <div class="card-stage" id="cardStage">
+      <div class="card-underlay-2"></div>
+      <div class="card-underlay"></div>
+
+      <!-- Active Topic Card (Aa Mode) -->
+      <div class="card card-settle" id="card">
+        <div>
+          <div class="card-header-row">
+            <div class="card-domain-badge" id="cardDomain">Product Discovery</div>
+            <div class="badge-group">
+              <span class="card-status-pill status-ai" id="cardAiPill" style="display:none;">AI Tailored</span>
+              <span class="card-status-pill status-new" id="cardStatusPill">New Topic</span>
+            </div>
+          </div>
+
+          <h2 class="topic-title" id="topicTitle">Problem vs. Solution Space</h2>
+
+          <div class="topic-insight-box">
+            <strong>Core Principle</strong>
+            <span id="topicInsight">Jumping directly to Figma mockups on Day 1 risks designing a polished solution for the wrong core user pain point.</span>
+          </div>
+
+          <div class="topic-action-prompt" id="topicPrompt">
+            Exercise: Clearly write the customer problem in 1 sentence without mentioning any UI features.
+          </div>
+        </div>
+
+        <div>
+          <div class="card-foot">
+            <span id="cardLevelText">Beginner Path</span>
+            <span id="cardFieldText" style="color:var(--gold);">Product Design</span>
+          </div>
+        </div>
+
+        <!-- Stamp appears ONLY when marked as read -->
+        <div class="stamp-done" id="cardStamp" style="display:none;">Done</div>
+      </div>
+    </div>
+
+    <!-- Clean Action Buttons (Aa Mode) -->
+    <div class="actions-row">
+      <button class="prev-btn" id="prevBtn" title="Go back to previously viewed topic" aria-label="Previous Topic">
+        <span>Prev</span>
+      </button>
+      <button class="draw-btn" id="drawBtn" title="Tear off and draw your next topic">
+        <span id="drawBtnText">Draw new topic</span>
+      </button>
+      <button class="mark-read-btn" id="markReadBtn" title="Mark topic as completed in your journal">
+        <span>Mark as read</span>
+      </button>
+      <button class="resources-action-btn" id="resourcesBtn" title="Explore referral links, articles & videos">
+        <span>Resources</span>
+      </button>
+    </div>
+
+    <div class="footer-row">
+      <button class="sound-toggle" id="soundToggle" title="Toggle paper tearing sound effects">
+        <span>Tear sound: On</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- Live Ticking Focus & Session Timer Widget (Positioned Directly Above Sai Santosh Badge) -->
+  <div class="corner-timer-widget" id="cornerTimerWidget" title="Live Study Timer — Automatically continues in Picture-in-Picture when you switch browser tabs">
+    <div class="timer-dot"></div>
+    <span class="timer-label">Focus</span>
+    <span class="timer-digits" id="liveTimerDigits">00:00:00</span>
+    <button class="timer-pip-btn" id="manualPipBtn" title="Toggle floating Picture-in-Picture companion">
+      <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <rect x="11" y="9" width="9" height="7" rx="1" ry="1" fill="currentColor" opacity="0.5"></rect>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bottom Right Creator Badge with Instagram and LinkedIn Links -->
+  <aside class="creator-corner-badge" aria-label="Creator Information">
+    <span class="creator-heading">Created by @Saisantosh</span>
+    <div class="creator-social-links">
+      <!-- Instagram Link -->
+      <a href="https://www.instagram.com/saisantoshoffical/" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Follow @Saisantosh on Instagram" aria-label="Instagram">
+        <svg class="social-svg" viewBox="0 0 24 24">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+        </svg>
+      </a>
+      <!-- LinkedIn Link -->
+      <a href="https://www.linkedin.com/in/saisantoshmadhari0711/?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base_contact_details%3B051PCr37Q7Gpb6WUm0fg%2FA%3D%3D" target="_blank" rel="noopener noreferrer" class="social-icon-btn" title="Connect with @Saisantosh on LinkedIn" aria-label="LinkedIn">
+        <svg class="social-svg" viewBox="0 0 24 24">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+        </svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Slide-Out Reading History & 15-Day Recycle Bin Drawer -->
+  <div class="history-overlay" id="historyOverlay" role="dialog" aria-modal="true" aria-label="Reading History Journal">
+    <div class="history-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">Reading Journal</div>
+        <button class="drawer-close-btn" id="closeHistoryBtn" aria-label="Close reading history">&times;</button>
+      </div>
+
+      <!-- Drawer Tabs -->
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="tabActiveJournal">Completed (<span id="tabCountActive">0</span>)</button>
+        <button class="drawer-tab" id="tabRecycleBin">Recycle Bin (<span id="tabCountTrash">0</span>)</button>
+      </div>
+
+      <div class="drawer-progress-box" id="drawerProgressWrap">
+        <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:4px; font-weight:600;">
+          <span>Overall curriculum</span>
+          <span id="drawerOverallPct">0% Progress</span>
+        </div>
+        <div class="progress-bar-track" style="height:6px;">
+          <div class="progress-bar-fill" id="drawerProgressBarFill"></div>
+        </div>
+      </div>
+
+      <div class="drawer-search-wrap">
+        <input type="text" class="drawer-search-input" id="historySearchInput" placeholder="Search topics..." />
+      </div>
+
+      <div class="history-list" id="historyList">
+        <!-- Dynamically injected items -->
+      </div>
+
+      <div class="drawer-footer" id="drawerFooter">
+        <button class="clear-all-btn" id="clearHistoryBtn">Clear Journal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Confirmation Modal -->
+  <div class="confirm-modal-overlay" id="confirmModalOverlay" role="dialog" aria-modal="true">
+    <div class="confirm-modal">
+      <h3 style="font-family:var(--font-heading); font-size:20px; margin-bottom:6px;">Clear Reading Journal?</h3>
+      <p style="font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin-bottom:14px;">
+        All completed topics will be moved to your <strong>15-Day Recycle Bin</strong>. You can restore them anytime within 15 days before permanent removal.
+      </p>
+      <div style="display:flex; justify-content:flex-end; gap:6px;">
+        <button class="modal-btn-test" id="cancelClearModal">Cancel</button>
+        <button class="clear-all-btn" id="confirmClearAction" style="background:#A82828; color:#fff;">Move to Recycle Bin</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Universal AI Setup Modal -->
+  <div class="gemini-modal-overlay" id="aiModalOverlay" role="dialog" aria-modal="true" aria-label="AI Provider Settings">
+    <div class="gemini-modal">
+      <div class="modal-head-row">
+        <div class="modal-title">AI Tutor Settings</div>
+        <button class="drawer-close-btn" id="cancelAiModal" aria-label="Close modal" style="width:28px; height:28px;">&times;</button>
+      </div>
+
+      <!-- Dynamic Help Instructions -->
+      <div class="provider-guide-box" id="providerGuideBox">
+        <strong>Google Gemini:</strong> 100% free tier with no credit card required.<br/>
+        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--purple); font-weight:700; text-decoration:underline;">
+          Get API Key at Google AI Studio ↗
+        </a>
+      </div>
+
+      <!-- Key Input -->
+      <div>
+        <label class="form-label" for="aiApiKeyInput">Your API Key (Auto-detects Gemini, OpenAI, Anthropic, Groq):</label>
+        <div class="input-with-toggle">
+          <input type="password" class="api-input" id="aiApiKeyInput" placeholder="Paste your API key here..." />
+          <button class="show-hide-btn" id="toggleAiKeyVisibility" type="button">Show</button>
+        </div>
+      </div>
+
+      <div class="test-status-box" id="aiTestStatusBox"></div>
+
+      <div style="font-size:12px; color:var(--ink-soft); line-height:1.45; margin-top:10px;">
+        🔒 <strong>Private Storage:</strong> Your key is saved locally in your browser (<code>localStorage</code>) and is only used to generate tailored curriculum topics.
+      </div>
+
+      <div class="modal-actions">
+        <div style="display:flex; gap:6px;">
+          <button class="modal-btn-test" id="testAiKeyBtn">Test Key</button>
+          <button class="card-action-btn delete" id="clearAiKeyBtn" style="padding:6px 10px;">Remove</button>
+        </div>
+        <button class="modal-btn-save" id="saveAiKeyBtn">Save & Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resources Modal -->
+  <div class="gemini-modal-overlay" id="resourcesModalOverlay" role="dialog" aria-modal="true" aria-label="Topic Resources">
+    <div class="gemini-modal" style="max-width: 580px;">
+      <div class="modal-head-row" style="margin-bottom: 8px;">
+        <div class="modal-title">Topic Resources</div>
+        <button class="drawer-close-btn" id="closeResourcesModalBtn" aria-label="Close resources modal" style="width:28px; height:28px;">&times;</button>
+      </div>
+      
+      <div class="drawer-tabs" style="margin-bottom: 16px; border-radius: 4px; overflow: hidden; background: #FFFDF9; border: 1px solid var(--border-subtle);">
+        <button class="drawer-tab active" id="tabResArticles">Articles</button>
+        <button class="drawer-tab" id="tabResVideos">Videos</button>
+        <button class="drawer-tab" id="tabResWebsites">Websites</button>
+      </div>
+
+      <div class="history-list" id="resourcesList" style="padding:0; min-height:150px; max-height:40vh;">
+        <!-- Dynamically injected resource items -->
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* =========================================================================
+     INTERACTIVE BACKGROUND CANVAS: WARM GOLDEN AMBER / CHAMPAGNE WAVE
+     ========================================================================= */
+  (function initInteractiveBg() {
+    const canvas = document.getElementById('interactiveCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    let mouse = { x: width / 2, y: height / 2, targetX: width / 2, targetY: height / 2, active: false };
+    let time = 0;
+    const cellSize = 36;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.targetX = e.clientX;
+      mouse.targetY = e.clientY;
+      mouse.active = true;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouse.active = false;
+    });
+
+    function draw() {
+      time += 0.024;
+      mouse.x += (mouse.targetX - mouse.x) * 0.09;
+      mouse.y += (mouse.targetY - mouse.y) * 0.09;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const cols = Math.ceil(width / cellSize) + 2;
+      const rows = Math.ceil(height / cellSize) + 2;
+
+      const points = [];
+      for (let r = 0; r <= rows; r++) {
+        points[r] = [];
+        for (let c = 0; c <= cols; c++) {
+          const originX = (c - 1) * cellSize;
+          const originY = (r - 1) * cellSize;
+
+          const dx = originX - mouse.x;
+          const dy = originY - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          let offsetX = 0;
+          let offsetY = 0;
+          const maxDist = 240;
+
+          if (dist < maxDist) {
+            const factor = Math.cos((dist / maxDist) * Math.PI * 0.5);
+            const wave = Math.sin(dist * 0.045 - time * 2.2) * 5.8 * factor;
+            offsetX = (dx / (dist || 1)) * wave;
+            offsetY = (dy / (dist || 1)) * wave;
+          }
+
+          const ambient = Math.sin(originX * 0.012 + originY * 0.012 + time) * 1.2;
+
+          points[r][c] = {
+            x: originX + offsetX + ambient,
+            y: originY + offsetY + ambient,
+            dist: dist
+          };
+        }
+      }
+
+      ctx.lineWidth = 1;
+
+      // Horizontal lines
+      for (let r = 0; r <= rows; r++) {
+        ctx.beginPath();
+        for (let c = 0; c <= cols; c++) {
+          const pt = points[r][c];
+          if (c === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = '#DBD1BE';
+        ctx.stroke();
+      }
+
+      // Vertical lines
+      for (let c = 0; c <= cols; c++) {
+        ctx.beginPath();
+        for (let r = 0; r <= rows; r++) {
+          const pt = points[r][c];
+          if (r === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        }
+        ctx.strokeStyle = '#DBD1BE';
+        ctx.stroke();
+      }
+
+      // Cursor hover aura
+      if (mouse.active) {
+        const radGrad = ctx.createRadialGradient(mouse.x, mouse.y, 8, mouse.x, mouse.y, 220);
+        radGrad.addColorStop(0, 'rgba(217, 119, 6, 0.12)');
+        radGrad.addColorStop(0.5, 'rgba(168, 118, 30, 0.05)');
+        radGrad.addColorStop(1, 'rgba(246, 243, 236, 0)');
+        ctx.fillStyle = radGrad;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    draw();
+  })();
+
+  /* =========================================================================
+     COMPREHENSIVE CURRICULUM DATABASE PARTITIONED BY FIELD & LEVEL
+     ========================================================================= */
+  const fieldCurriculums = {
+    "Product Design": {
+      beginner: [
+        { id: "pd-b1", t: "Problem vs. Solution Space", domain: "Product Discovery", level: "beginner", field: "Product Design", insight: "Jumping directly to Figma mockups on Day 1 risks designing a polished solution for the wrong core user pain point.", prompt: "Exercise: Clearly write the customer problem in 1 sentence without mentioning any UI features." },
+        { id: "pd-b2", t: "The Mom Test Validation", domain: "User Discovery", level: "beginner", field: "Product Design", insight: "Asking 'Would you buy this?' produces false validation. Ask about concrete past behaviors and actual dollars spent.", prompt: "Exercise: Rephrase a feature feedback question into an inquiry about the user's last real purchase." },
+        { id: "pd-b3", t: "Jobs-To-Be-Done (JTBD)", domain: "Product Thinking", level: "beginner", field: "Product Design", insight: "People don't buy products; they hire them to make progress in specific life situations.", prompt: "Exercise: Draft a 'When I [situation], I want to [motivation], so that [outcome]' statement." },
+        { id: "pd-b4", t: "Anatomy of an Elite PRD", domain: "Product Specs", level: "beginner", field: "Product Design", insight: "A complete PRD defines Goals, Non-Goals, User Stories, Edge Cases, and Success Metrics.", prompt: "Exercise: Write out the explicit Non-Goals section for your current product release." },
+        { id: "pd-b5", t: "MVP vs Minimum Lovable Product", domain: "Product Craft", level: "beginner", field: "Product Design", insight: "A barebones MVP can turn users away. An MLP delivers focused scope with enough craft to inspire loyalty.", prompt: "Exercise: Identify the single delightful micro-interaction that elevates your MVP to an MLP." },
+        { id: "pd-b6", t: "Nielsen's 10 Heuristics", domain: "Heuristic Evaluation", level: "beginner", field: "Product Design", insight: "Visibility of system status, real-world match, user control, consistency, and error prevention.", prompt: "Exercise: Audit your app for real-time loading feedback during file uploads." }
+      ],
+      intermediate: [
+        { id: "pd-i1", t: "The North Star Metric Framework", domain: "Product Metrics", level: "intermediate", field: "Product Design", insight: "A single focal metric that best captures the core value delivered to customers while driving business revenue.", prompt: "Exercise: State your product's North Star metric and 3 input levers that drive it." },
+        { id: "pd-i2", t: "REST APIs & JSON for Designers", domain: "Technical Fluency", level: "intermediate", field: "Product Design", insight: "Knowing how data is structured in JSON objects enables designers to design realistic data bounds and edge cases.", prompt: "Exercise: Inspect a network JSON response in your browser DevTools." },
+        { id: "pd-i3", t: "Optimizing Time-to-Value (TTV)", domain: "Onboarding Design", level: "intermediate", field: "Product Design", insight: "Remove mandatory email verifications and profile surveys before users experience their first core utility.", prompt: "Exercise: Count the clicks from signup to first Aha! moment. Cut half of them." },
+        { id: "pd-i4", t: "Scientific A/B Test Hypotheses", domain: "Experimentation", level: "intermediate", field: "Product Design", insight: "Structure tests strictly: 'If we [change], then [metric impact] will occur, because [behavioral rationale].'", prompt: "Exercise: Write a formal hypothesis for optimizing your landing page CTA." }
+      ],
+      advanced: [
+        { id: "pd-a1", t: "Situation-Insight-Bet-Result (SIBR)", domain: "Executive Comms", level: "advanced", field: "Product Design", insight: "Structure design proposals using the 4-part SIBR framework to win immediate leadership alignment.", prompt: "Exercise: Pitch your next redesign project using the SIBR 4-sentence format." },
+        { id: "pd-a2", t: "Self-Sustaining Growth Loops", domain: "Growth Strategy", level: "advanced", field: "Product Design", insight: "Funnels require continuous paid ad input. Growth loops use the output of one user to acquire the next.", prompt: "Exercise: Map a viral loop where normal usage naturally invites external collaborators." },
+        { id: "pd-a3", t: "Value-Based Pricing Strategy", domain: "Monetization", level: "advanced", field: "Product Design", insight: "Clients pay for business outcomes and revenue velocity, not the number of hours spent pushing pixels.", prompt: "Exercise: Reframe a project quote based on the client's expected revenue upside." }
+      ]
+    },
+    "UI Design & Design Systems": {
+      beginner: [
+        { id: "ui-b1", t: "The 8pt Spatial Grid System", domain: "Layout Craft", level: "beginner", field: "UI Design & Design Systems", insight: "Restricting margins, padding, and heights to multiples of 8 creates subconscious visual rhythm across screens.", prompt: "Exercise: Align all component paddings and margins to the 8pt grid scale." },
+        { id: "ui-b2", t: "Modular Typographic Scales", domain: "Typography", level: "beginner", field: "UI Design & Design Systems", insight: "Using a consistent ratio (e.g. 1.25 Major Third) produces mathematically harmonious hierarchy.", prompt: "Exercise: Establish a 6-tier typographic scale using rem units." },
+        { id: "ui-b3", t: "Figma Auto-Layout Fundamentals", domain: "Figma Craft", level: "beginner", field: "UI Design & Design Systems", insight: "Mastering directional padding, gap distribution, and fill-container constraints creates responsive UI instantly.", prompt: "Exercise: Build a responsive card that gracefully resizes from 320px to 640px." }
+      ],
+      intermediate: [
+        { id: "ui-i1", t: "Semantic Color Token Architecture", domain: "Design Tokens", level: "intermediate", field: "UI Design & Design Systems", insight: "Never hardcode raw hex values. Route through semantic functional aliases like 'surface-primary' and 'border-subtle'.", prompt: "Exercise: Map 5 raw hex codes to functional semantic color tokens." },
+        { id: "ui-i2", t: "Dark Mode Surface Calibration", domain: "Theming Systems", level: "intermediate", field: "UI Design & Design Systems", insight: "Dark mode isn't inverted colors; it requires calibrated elevation surfaces with desaturated accent tones.", prompt: "Exercise: Build a theme-swappable card using Figma Modes or CSS variables." },
+        { id: "ui-i3", t: "Atomic Component Architecture", domain: "Design Systems", level: "intermediate", field: "UI Design & Design Systems", insight: "Compose interfaces from Atoms (buttons, inputs) to Molecules (search bars) to Organisms (headers).", prompt: "Exercise: Decompose a complex navigation bar into its constituent atomic parts." }
+      ],
+      advanced: [
+        { id: "ui-a1", t: "Multi-Brand Design Token Pipelines", domain: "Enterprise Systems", level: "advanced", field: "UI Design & Design Systems", insight: "Exporting token JSON via Style Dictionary across React, iOS, and Android keeps enterprise brands in 100% sync.", prompt: "Exercise: Create a token JSON file with global, alias, and component tier tokens." },
+        { id: "ui-a2", t: "Component Versioning & Breaking Changes", domain: "DesignOps", level: "advanced", field: "UI Design & Design Systems", insight: "Treat design components as software packages with semantic versioning (SemVer) and deprecation paths.", prompt: "Exercise: Write a migration guide for a deprecated button component." }
+      ]
+    },
+    "UX Research & Usability": {
+      beginner: [
+        { id: "uxr-b1", t: "Non-Leading Interview Scripting", domain: "Qualitative Research", level: "beginner", field: "UX Research & Usability", insight: "Leading questions anchor interviewees. Ask 'Walk me through the last time you...' to uncover true human habits.", prompt: "Exercise: Write 3 open-ended interview prompts that contain zero positive or negative bias." },
+        { id: "uxr-b2", t: "Qualitative Affinity Mapping", domain: "Synthesis", level: "beginner", field: "UX Research & Usability", insight: "Synthesize hundreds of user observations into structured insight themes by grouping sticky notes bottom-up.", prompt: "Exercise: Group 10 user quotes into 3 distinct thematic insight categories." },
+        { id: "uxr-b3", t: "Unarticulated Needs Discovery", domain: "User Discovery", level: "beginner", field: "UX Research & Usability", insight: "Users rarely explain root friction directly. Look for workarounds, angry forum comments, and spreadsheets.", prompt: "Exercise: Find 3 recurring complaint patterns in competitor app store reviews." }
+      ],
+      intermediate: [
+        { id: "uxr-i1", t: "Moderated Think-Aloud Protocols", domain: "Usability Testing", level: "intermediate", field: "UX Research & Usability", insight: "Guide participants to verbalize their real-time thought process during live testing sessions without offering hints.", prompt: "Exercise: Script a neutral moderator response for when a test participant gets stuck." },
+        { id: "uxr-i2", t: "Heatmap & Session Recording Audits", domain: "Behavioral Analytics", level: "intermediate", field: "UX Research & Usability", insight: "Watching real session recordings uncovers unexpected rage clicks, dead clicks, and reading hesitation points.", prompt: "Exercise: Review 5 user session recordings to spot where cursors hesitate before clicking." },
+        { id: "uxr-i3", t: "Card Sorting for Navigation", domain: "IA Validation", level: "intermediate", field: "UX Research & Usability", insight: "Open and closed card sorting reveals where users intuitively expect content to live across menus.", prompt: "Exercise: Create a 10-card deck of key pages and ask a colleague to group them logically." }
+      ],
+      advanced: [
+        { id: "uxr-a1", t: "Usability Severity Matrix Scoring", domain: "Research Operations", level: "advanced", field: "UX Research & Usability", insight: "Classify usability friction into Critical (blocker), High, Medium, and Low severity to prioritize sprint tickets.", prompt: "Exercise: Score 3 user test findings using a 4-tier severity matrix." },
+        { id: "uxr-a2", t: "Executive Usability ROI Presentations", domain: "Stakeholder Alignment", level: "advanced", field: "UX Research & Usability", insight: "Translate UX friction into revenue loss and churn metrics when presenting findings to executive leadership.", prompt: "Exercise: Frame a usability defect as a quantifiable annual revenue loss calculation." }
+      ]
+    },
+    "Customer Experience (CX) Design": {
+      beginner: [
+        { id: "cx-b1", t: "Omnichannel Customer Journey Mapping", domain: "Journey Architecture", level: "beginner", field: "Customer Experience (CX) Design", insight: "Map touchpoints from marketing ads, landing page, checkout, email invoices to unboxing.", prompt: "Exercise: Map the end-to-end customer journey from discovery to post-purchase support." },
+        { id: "cx-b2", t: "CSAT vs NPS vs CES Metrics", domain: "CX Measurement", level: "beginner", field: "Customer Experience (CX) Design", insight: "Customer Satisfaction (CSAT), Net Promoter Score (NPS), and Customer Effort Score (CES) measure distinct friction points.", prompt: "Exercise: Identify whether CSAT or CES is better suited for your customer support portal." }
+      ],
+      intermediate: [
+        { id: "cx-i1", t: "Service Blueprint Frontstage & Backstage", domain: "Service Design", level: "intermediate", field: "Customer Experience (CX) Design", insight: "Align visible customer touchpoints with behind-the-scenes support staff, database jobs, and logistics.", prompt: "Exercise: Sketch the backstage actions triggered when a user clicks 'Request Refund'." },
+        { id: "cx-i2", t: "Proactive Support & Escalation UX", domain: "Customer Success", level: "intermediate", field: "Customer Experience (CX) Design", insight: "Anticipate user frustration before they open a ticket by triggering helpful contextual tooltips on repeated errors.", prompt: "Exercise: Design a proactive help banner triggered after 2 failed payment attempts." }
+      ],
+      advanced: [
+        { id: "cx-a1", t: "Designing for High-Stakes Customer Recovery", domain: "Trust & Retention", level: "advanced", field: "Customer Experience (CX) Design", insight: "When an outage occurs, transparent communication and immediate goodwill credits turn detractors into loyal advocates.", prompt: "Exercise: Draft an in-app service outage apology and status dashboard." }
+      ]
+    },
+    "UX Psychology & Behavioral Design": {
+      beginner: [
+        { id: "psy-b1", t: "The Fogg Behavior Model (B=MAP)", domain: "Behavioral Design", level: "beginner", field: "UX Psychology & Behavioral Design", insight: "Behavior occurs when Motivation, Ability, and Prompt converge simultaneously at the exact moment of action.", prompt: "Exercise: If a user fails to activate, is it due to low motivation, high friction, or missing prompt?" },
+        { id: "psy-b2", t: "Cognitive Biases in UI Decisions", domain: "Cognitive Science", level: "beginner", field: "UX Psychology & Behavioral Design", insight: "Anchoring, loss aversion, and default bias heavily dictate decision-making speed inside web flows.", prompt: "Exercise: Check your pricing table. Is the recommended default plan clearly pre-selected?" },
+        { id: "psy-b3", t: "The Hook Model & Habit Loops", domain: "Habit Formation", level: "beginner", field: "UX Psychology & Behavioral Design", insight: "Trigger → Action → Variable Reward → Investment. Ethical habit loops reward meaningful user progress.", prompt: "Exercise: Map the exact internal trigger that brings users back to your application daily." }
+      ],
+      intermediate: [
+        { id: "psy-i1", t: "Hick's Law & Choice Architecture", domain: "Cognitive Load", level: "intermediate", field: "UX Psychology & Behavioral Design", insight: "The time required to make a decision increases logarithmically with the number and complexity of choices.", prompt: "Exercise: Reduce the options on your primary landing page navigation from 7 to 4." },
+        { id: "psy-i2", t: "Peak-End Rule in Flow Design", domain: "Perceptual Psychology", level: "intermediate", field: "UX Psychology & Behavioral Design", insight: "Users judge an experience largely based on how they felt at its peak (most intense point) and at its end.", prompt: "Exercise: Elevate the completion confirmation screen of your main workflow with an inspiring micro-celebration." }
+      ],
+      advanced: [
+        { id: "psy-a1", t: "Ethical Persuasion vs Dark Patterns", domain: "Ethical UX", level: "advanced", field: "UX Psychology & Behavioral Design", insight: "Deceptive patterns (hidden subscriptions, roach motels) produce short-term vanity lifts but destroy lifetime retention.", prompt: "Exercise: Audit your cancellation flow to ensure it takes no more clicks than subscribing." }
+      ]
+    },
+    "Growth Product Design & Monetization": {
+      beginner: [
+        { id: "gro-b1", t: "Pirate Metrics (AARRR) Optimization", domain: "Growth Frameworks", level: "beginner", field: "Growth Product Design & Monetization", insight: "Acquisition → Activation → Retention → Referral → Revenue. Plugging retention leaks must always precede ad spend.", prompt: "Exercise: Identify which of the 5 AARRR stages currently has the biggest conversion drop." },
+        { id: "gro-b2", t: "The Aha! Moment in Onboarding", domain: "Activation UX", level: "beginner", field: "Growth Product Design & Monetization", insight: "Find the exact correlation between an early action and long-term retention (e.g. adding 7 friends in 10 days).", prompt: "Exercise: Identify the single action in your product that correlates with active 30-day retention." }
+      ],
+      intermediate: [
+        { id: "gro-i1", t: "Contextual Upgrade Paywalls", domain: "Monetization UX", level: "intermediate", field: "Growth Product Design & Monetization", insight: "Contextual upgrade triggers that highlight locked features at the moment of intent beat static pricing pages.", prompt: "Exercise: Design an in-app upgrade modal triggered when reaching a usage limit." },
+        { id: "gro-i2", t: "K-Factor Virality & Referral Loops", domain: "Growth Loops", level: "intermediate", field: "Growth Product Design & Monetization", insight: "K = Invites Sent × Conversion Rate. When K > 1, the product achieves compounding organic viral growth.", prompt: "Exercise: Design a natural post-purchase prompt inviting teammates to collaborate." }
+      ],
+      advanced: [
+        { id: "gro-a1", t: "Self-Sustaining Growth Loops vs Funnels", domain: "Growth Strategy", level: "advanced", field: "Growth Product Design & Monetization", insight: "Linear funnels decay. Growth loops feed user outputs directly into new user inputs.", prompt: "Exercise: Map a content loop where user-created artifacts attract search engine traffic." }
+      ]
+    },
+    "AI Product & Agentic UX": {
+      beginner: [
+        { id: "ai-b1", t: "Mental Models for Generative AI", domain: "AI Interaction", level: "beginner", field: "AI Product & Agentic UX", insight: "Users treat generative AI as a human collaborator; design clear feedback on what the model can and cannot do.", prompt: "Exercise: Write introductory prompt guidance placeholder text for an AI text box." },
+        { id: "ai-b2", t: "Empty State AI Prompt Starters", domain: "AI Onboarding", level: "beginner", field: "AI Product & Agentic UX", insight: "Blank chat inputs cause prompt paralysis. Provide 3 high-value clickable suggestion cards.", prompt: "Exercise: Design 3 contextual prompt pill suggestions for a new user." }
+      ],
+      intermediate: [
+        { id: "ai-i1", t: "Streaming Response UI & Skeletons", domain: "AI Performance", level: "intermediate", field: "AI Product & Agentic UX", insight: "Streaming tokens incrementally reduces perceived latency by up to 80% compared to waiting for full completion.", prompt: "Exercise: Design a smooth cursor animation for live streaming text responses." },
+        { id: "ai-i2", t: "LLM Confidence & Grounded Citations", domain: "AI Trust", level: "intermediate", field: "AI Product & Agentic UX", insight: "Expose visible source citations, confidence indicators, and diff reviews to build enduring user trust in AI.", prompt: "Exercise: Design an interactive hover card displaying grounded source citations for an AI summary." }
+      ],
+      advanced: [
+        { id: "ai-a1", t: "AI Agent Autonomy & Approval Gates", domain: "Agentic UX", level: "advanced", field: "AI Product & Agentic UX", insight: "As AI autonomy scales to agentic actions, destructive operations require explicit human approval gates.", prompt: "Exercise: Design an approval preview card showing API actions an AI agent is about to execute." },
+        { id: "ai-a2", t: "1-Click Rollbacks for AI Mistakes", domain: "AI Safety", level: "advanced", field: "AI Product & Agentic UX", insight: "Since AI models occasionally hallucinate, easy 1-click rollback mechanisms keep users in total control.", prompt: "Exercise: Design a non-blocking toast notification that allows undoing an AI refactor for 10 seconds." }
+      ]
+    },
+    "Enterprise & B2B SaaS Design": {
+      beginner: [
+        { id: "ent-b1", t: "High Data Density Table Patterns", domain: "Data UX", level: "beginner", field: "Enterprise & B2B SaaS Design", insight: "Enterprise users need dense tables, column customizers, inline batch actions, and saved filter views.", prompt: "Exercise: Design a data table that accommodates 10 columns without requiring horizontal scrollbar." },
+        { id: "ent-b2", t: "Keyboard Shortcuts in Power Workflows", domain: "Efficiency UX", level: "beginner", field: "Enterprise & B2B SaaS Design", insight: "Power users rely on keyboard navigation (cmd+k, j/k cursor navigation) to process hundreds of records daily.", prompt: "Exercise: Define keyboard shortcut combinations for 3 core repetitive actions in your SaaS." }
+      ],
+      intermediate: [
+        { id: "ent-i1", t: "Role-Based Access Control (RBAC)", domain: "Security UX", level: "intermediate", field: "Enterprise & B2B SaaS Design", insight: "Map complex permission matrices cleanly across Admin, Manager, Member, and Viewer user tiers.", prompt: "Exercise: Build a permissions grid specifying what each role can create, edit, or delete." },
+        { id: "ent-i2", t: "Multi-Tenant Workspace Switching", domain: "Enterprise Architecture", level: "intermediate", field: "Enterprise & B2B SaaS Design", insight: "Design account-switching drawers, organization hierarchies, and workspace isolation for multi-org users.", prompt: "Exercise: Design a seamless workspace-switcher drawer for users managing multiple enterprise accounts." }
+      ],
+      advanced: [
+        { id: "ent-a1", t: "Destructive Action Safeguards & Logs", domain: "Enterprise Safety", level: "advanced", field: "Enterprise & B2B SaaS Design", insight: "Require typed confirmations for permanent deletions and maintain searchable chronological system activity logs.", prompt: "Exercise: Design a deletion modal that requires typing the project name to confirm." }
+      ]
+    },
+    "Interaction & Motion Design": {
+      beginner: [
+        { id: "mot-b1", t: "Spring Physics vs Linear Easing", domain: "Motion Mechanics", level: "beginner", field: "Interaction & Motion Design", insight: "Natural physical spring easing (200ms–350ms) communicates state changes without feeling robotic or sluggish.", prompt: "Exercise: Apply a cubic-bezier spring curve to your primary modal entrance." },
+        { id: "mot-b2", t: "Hover Elevation & Click Depression", domain: "Micro-Interactions", level: "beginner", field: "Interaction & Motion Design", insight: "Shifting a button shadow from 4px to 1px on click gives tactile physical satisfaction.", prompt: "Exercise: Implement CSS active transform: translateY(1px) on all interactive buttons." }
+      ],
+      intermediate: [
+        { id: "mot-i1", t: "Choreographed Staggered Entrances", domain: "Motion Choreography", level: "intermediate", field: "Interaction & Motion Design", insight: "Staggering list item animations by 30ms directs user eye flow naturally down the page.", prompt: "Exercise: Add a 30ms staggered fade-and-slide entrance to a card list." },
+        { id: "mot-i2", t: "Shared Element Transitions", domain: "Layout Transitions", level: "intermediate", field: "Interaction & Motion Design", insight: "Morphing a clicked thumbnail seamlessly into a full modal preview preserves spatial orientation.", prompt: "Exercise: Design a shared layout transition from a card thumbnail into an expanded view." }
+      ],
+      advanced: [
+        { id: "mot-a1", t: "Accessible Motion & Reduced Preferences", domain: "Accessible Motion", level: "advanced", field: "Interaction & Motion Design", insight: "Always respect OS reduced motion preferences by disabling zoom/slide effects for vestibular disorder users.", prompt: "Exercise: Wrap all CSS keyframe animations inside @media (prefers-reduced-motion: no-preference)." }
+      ]
+    },
+    "Service Design & Journey Mapping": {
+      beginner: [
+        { id: "ser-b1", t: "Frontstage vs Backstage Service Mapping", domain: "Service Architecture", level: "beginner", field: "Service Design & Journey Mapping", insight: "Service design links the human interactions users see with the internal operations required to deliver them.", prompt: "Exercise: Map the internal team handoffs that occur when a customer reports a broken order." }
+      ],
+      intermediate: [
+        { id: "ser-i1", t: "Cross-Departmental Alignment Workshops", domain: "Facilitation", level: "intermediate", field: "Service Design & Journey Mapping", insight: "Bring customer support, engineering, and sales into one room to map pain points across departmental silos.", prompt: "Exercise: Draft an agenda for a 60-minute cross-departmental customer friction mapping session." }
+      ],
+      advanced: [
+        { id: "ser-a1", t: "Resilient Physical-Digital Handoffs", domain: "Hybrid UX", level: "advanced", field: "Service Design & Journey Mapping", insight: "When digital apps interact with physical hardware (kiosks, couriers, POS), design for real-world delays.", prompt: "Exercise: Design an offline fallback flow for a delivery driver when cellular connection drops." }
+      ]
+    },
+    "Information Architecture (IA)": {
+      beginner: [
+        { id: "ia-b1", t: "Intuitive Navigation Taxonomies", domain: "Navigation Design", level: "beginner", field: "Information Architecture (IA)", insight: "Intuitive navigation mirrors the user's mental categorization rather than internal company team structures.", prompt: "Exercise: Audit your top navigation bar—are labels clear to someone with zero domain jargon?" },
+        { id: "ia-b2", t: "Open vs Closed Card Sorting", domain: "IA Research", level: "beginner", field: "Information Architecture (IA)", insight: "Card sorting reveals where users intuitively expect content to live across navigation menus.", prompt: "Exercise: Create a 10-card deck of key pages and ask a colleague to group them logically." }
+      ],
+      intermediate: [
+        { id: "ia-i1", t: "Tree Testing for Validation", domain: "IA Usability", level: "intermediate", field: "Information Architecture (IA)", insight: "Tree testing tests site structure in plain text without visual design distractions to measure direct findability.", prompt: "Exercise: Write 3 tree-test findability tasks for your application's settings hierarchy." }
+      ],
+      advanced: [
+        { id: "ia-a1", t: "Faceted Search & Dynamic Filters", domain: "Search UX", level: "advanced", field: "Information Architecture (IA)", insight: "Architect multi-select filter trees that dynamically update counts and disable dead-end combinations.", prompt: "Exercise: Design a faceted sidebar filter that disables zero-result options automatically." }
+      ]
+    },
+    "Design Operations (DesignOps)": {
+      beginner: [
+        { id: "dop-b1", t: "Figma File Hygiene & Structure", domain: "Workflow Standards", level: "beginner", field: "Design Operations (DesignOps)", insight: "Standardized frame naming, clean auto-layout, and color styles reduce handoff friction with engineers.", prompt: "Exercise: Clean up a dirty Figma canvas and organize frames into structured rows." }
+      ],
+      intermediate: [
+        { id: "dop-i1", t: "Developer Handoff Redlines & Specs", domain: "Handoff Operations", level: "intermediate", field: "Design Operations (DesignOps)", insight: "Annotate edge cases, responsive breakpoints, and animation timing to eliminate engineering guesswork.", prompt: "Exercise: Add developer handoff annotations to a complex form component." }
+      ],
+      advanced: [
+        { id: "dop-a1", t: "Tracking UX Design Debt in Sprints", domain: "Design Ops", level: "advanced", field: "Design Operations (DesignOps)", insight: "Catalog minor usability friction and visual inconsistencies alongside technical debt in engineering sprints.", prompt: "Exercise: Create a prioritized design debt backlog board with effort-to-impact ratings." }
+      ]
+    },
+    "Accessibility & Inclusive Design": {
+      beginner: [
+        { id: "a11y-b1", t: "WCAG 2.2 AA Contrast Ratios (4.5:1)", domain: "Visual Accessibility", level: "beginner", field: "Accessibility & Inclusive Design", insight: "Ensure 4.5:1 text contrast ratios and visible focus indicators for all interactive elements.", prompt: "Exercise: Audit your primary button states using an automated contrast checker." },
+        { id: "a11y-b2", t: "44x44px Minimum Touch Targets", domain: "Mobile Accessibility", level: "beginner", field: "Accessibility & Inclusive Design", insight: "Small tap targets cause rage clicks on mobile devices. Ensure interactive areas are at least 44x44px.", prompt: "Exercise: Increase padding on mobile icon buttons to meet the 44px minimum target." }
+      ],
+      intermediate: [
+        { id: "a11y-i1", t: "Screen Reader DOM & ARIA Landmarks", domain: "Assistive Tech", level: "intermediate", field: "Accessibility & Inclusive Design", insight: "Clean HTML heading hierarchy (H1 → H2 → H3) and descriptive alt text allow blind users to navigate effortlessly.", prompt: "Exercise: Test your landing page using a native screen reader with your screen turned off." },
+        { id: "a11y-i2", t: "Keyboard Focus Traps & Skip Links", domain: "Keyboard Navigation", level: "intermediate", field: "Accessibility & Inclusive Design", insight: "Modal overlays must trap keyboard focus within the dialog and return focus to the trigger upon closing.", prompt: "Exercise: Verify that pressing Tab cycles cleanly through your modal without escaping." }
+      ],
+      advanced: [
+        { id: "a11y-a1", t: "Inclusive Design for Neurodiversity", domain: "Cognitive a11y", level: "advanced", field: "Accessibility & Inclusive Design", insight: "Avoid aggressive autoplaying carousels, flashing animations, and time limits that induce anxiety.", prompt: "Exercise: Add an option to pause timed quizzes or extend session timers." }
+      ]
+    }
+  };
+
+  function getDeckForFieldAndLevel(field, level) {
+    const fieldData = fieldCurriculums[field] || fieldCurriculums["Product Design"];
+    return fieldData[level] || fieldData["beginner"] || [];
+  }
+
+  /* App State & Local Storage */
+  const STORAGE_READ_KEY = "levelup_read_topics_v4";
+  const STORAGE_TRASH_KEY = "levelup_trash_topics_v4";
+  const STORAGE_SOUND_KEY = "levelup_sound_enabled";
+  const STORAGE_AI_PROVIDER_KEY = "levelup_ai_provider";
+  const STORAGE_AI_KEY = "levelup_ai_api_key";
+  const STORAGE_AI_BASEURL_KEY = "levelup_ai_baseurl";
+  const STORAGE_AI_MODEL_KEY = "levelup_ai_model";
+  const STORAGE_FIELD_KEY = "levelup_field_of_study";
+
+  let currentLevel = 'beginner';
+  let currentField = localStorage.getItem(STORAGE_FIELD_KEY) || 'Product Design';
+  let readHistory = [];
+  let trashHistory = [];
+  let historyStack = [];
+  let isSoundEnabled = true;
+  let currentCardTopic = null;
+  let isAnimating = false;
+  let isAiGenerating = false;
+  let activeDrawerTab = 'active';
+
+  let aiProvider = localStorage.getItem(STORAGE_AI_PROVIDER_KEY) || 'gemini';
+  let aiApiKey = localStorage.getItem(STORAGE_AI_KEY) || '';
+  let aiBaseUrl = localStorage.getItem(STORAGE_AI_BASEURL_KEY) || '';
+  let aiModel = localStorage.getItem(STORAGE_AI_MODEL_KEY) || '';
+
+  try {
+    const saved = localStorage.getItem(STORAGE_READ_KEY);
+    if (saved) readHistory = JSON.parse(saved);
+  } catch (e) {}
+
+  try {
+    const savedTrash = localStorage.getItem(STORAGE_TRASH_KEY);
+    if (savedTrash) {
+      const now = Date.now();
+      const fifteenDaysMs = 15 * 24 * 60 * 60 * 1000;
+      trashHistory = JSON.parse(savedTrash).filter(item => (now - item.deletedAt) < fifteenDaysMs);
+    }
+  } catch (e) {}
+
+  try {
+    const savedSound = localStorage.getItem(STORAGE_SOUND_KEY);
+    if (savedSound !== null) isSoundEnabled = savedSound === "true";
+  } catch (e) {}
+
+  function saveHistory() {
+    try {
+      localStorage.setItem(STORAGE_READ_KEY, JSON.stringify(readHistory));
+      localStorage.setItem(STORAGE_TRASH_KEY, JSON.stringify(trashHistory));
+    } catch (e) {}
+    updateMasteryProgress();
+    updateHistoryBadge();
+  }
+
+  function updateMasteryProgress() {
+    const deck = getDeckForFieldAndLevel(currentField, currentLevel);
+    const readInTier = readHistory.filter(h => h.level === currentLevel && (h.field === currentField || !h.field)).length;
+    const totalInTier = Math.max(deck.length, 1);
+    const pct = Math.min(100, Math.round((readInTier / totalInTier) * 100));
+
+    const levelDisplayName = currentLevel.charAt(0).toUpperCase() + currentLevel.slice(1);
+    document.getElementById('progressLevelLabel').textContent = `${levelDisplayName} Mastery`;
+    document.getElementById('progressStatsLabel').textContent = `${readInTier} / ${totalInTier} Completed (${pct}%)`;
+    document.getElementById('progressBarFill').style.width = pct + '%';
+
+    const totalRead = readHistory.length;
+    const targetAll = 50;
+    const overallPct = Math.min(100, Math.round((totalRead / targetAll) * 100));
+    document.getElementById('drawerOverallPct').textContent = `${overallPct}% Progress (${totalRead} topics logged)`;
+    document.getElementById('drawerProgressBarFill').style.width = overallPct + '%';
+
+    const banner = document.getElementById('levelCompleteBanner');
+    if (pct === 100) {
+      banner.classList.add('active');
+    } else {
+      banner.classList.remove('active');
+    }
+  }
+
+  async function checkAiStatus() {
+    const pillText = document.getElementById('aiPillText');
+    const pill = document.getElementById('aiSetupBtn');
+    const hasKey = !!aiApiKey;
+
+    if (hasKey) {
+      const providerLabel = aiProvider === 'openai' ? 'OpenAI' : aiProvider === 'anthropic' ? 'Claude' : aiProvider === 'groq' ? 'Groq' : 'Gemini';
+      pillText.textContent = `${providerLabel} Active`;
+      pill.style.borderColor = 'var(--green)';
+      pill.style.background = 'var(--green-light)';
+      pill.style.color = 'var(--green)';
+    } else {
+      pillText.textContent = 'AI Setup';
+      pill.style.borderColor = 'var(--purple)';
+      pill.style.background = 'var(--purple-light)';
+      pill.style.color = 'var(--purple)';
+    }
+  }
+
+  let audioCtx = null;
+  function playTearSound() {
+    if (!isSoundEnabled) return;
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const bufferSize = audioCtx.sampleRate * 0.16;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        const decay = Math.exp(-i / (bufferSize * 0.3));
+        output[i] = (Math.random() * 2 - 1) * decay * 0.35;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = buffer;
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(1300, audioCtx.currentTime);
+      filter.Q.setValueAtTime(1.8, audioCtx.currentTime);
+
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.16);
+
+      whiteNoise.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      whiteNoise.start();
+    } catch (e) {}
+  }
+
+  function ensureTopicResources(topic) {
+    const topicQuery = encodeURIComponent(`${topic.t} ${topic.domain || currentField}`);
+    const domainQuery = encodeURIComponent(`${topic.domain || currentField}`);
+    
+    const baseArticles = [
+      { title: `Deep Dive: ${topic.t} (Nielsen Norman Group)`, url: `https://www.nngroup.com/search/?q=${topicQuery}` },
+      { title: `Mastering ${topic.domain || currentField} Frameworks on UX Collective`, url: `https://uxdesign.cc/search?q=${domainQuery}` },
+      { title: `Foundations & Literature (Interaction Design Foundation)`, url: `https://www.interaction-design.org/search?q=${topicQuery}` },
+      { title: `Smashing Magazine: Practical Workflow Guide for ${topic.t}`, url: `https://www.smashingmagazine.com/search/?q=${topicQuery}` },
+      { title: `Harvard Business Review / Design Strategy Perspective`, url: `https://hbr.org/search?term=${domainQuery}+design+strategy` },
+      { title: `Growth.design Psychology & Product Case Studies`, url: `https://growth.design/case-studies` }
+    ];
+
+    const baseVideos = [
+      { title: `${topic.t} — Visual Masterclass & Breakdown (YouTube)`, url: `https://www.youtube.com/results?search_query=${topicQuery}+masterclass` },
+      { title: `Real-World Case Study Teardown: ${topic.domain || currentField} in Top Apps`, url: `https://www.youtube.com/results?search_query=${domainQuery}+ux+case+study+breakdown` },
+      { title: `Flux Academy & AJ&Smart Workshop: Advanced Design Techniques`, url: `https://www.youtube.com/results?search_query=aj+smart+${domainQuery}+workshop` },
+      { title: `Figma Official & Design Leaders: Live Workflow for ${topic.t}`, url: `https://www.youtube.com/results?search_query=figma+${topicQuery}+tutorial` },
+      { title: `5-Minute UX Heuristics & Common Anti-Patterns`, url: `https://www.youtube.com/results?search_query=${topicQuery}+design+mistakes` }
+    ];
+
+    const baseWebsites = [
+      { title: `Live UI Patterns & Real Apps for ${topic.t} (Mobbin)`, url: `https://mobbin.com/search?q=${topicQuery}` },
+      { title: `Laws of UX: Interactive Psychological Principles & Heuristics`, url: `https://lawsofux.com/` },
+      { title: `Component Gallery: UI Component Reference Repository`, url: `https://component.gallery/` },
+      { title: `Pageflows: Verified User Flow Recordings from Real Products`, url: `https://pageflows.com/` },
+      { title: `Checklist.design: Industry Standards & QA Checklists`, url: `https://www.checklist.design/` },
+      { title: `Built For Mars: Comprehensive UX Audits & Teardowns`, url: `https://builtformars.com/` }
+    ];
+
+    if (topic.resources && typeof topic.resources === 'object') {
+      return {
+        articles: (topic.resources.articles && topic.resources.articles.length >= 4) ? topic.resources.articles : baseArticles,
+        videos: (topic.resources.videos && topic.resources.videos.length >= 3) ? topic.resources.videos : baseVideos,
+        websites: (topic.resources.websites && topic.resources.websites.length >= 4) ? topic.resources.websites : baseWebsites
+      };
+    }
+    return { articles: baseArticles, videos: baseVideos, websites: baseWebsites };
+  }
+
+  function pickCuratedFallback(excludeId = null) {
+    const deck = getDeckForFieldAndLevel(currentField, currentLevel);
+    const readIds = new Set(readHistory.map(h => h.id));
+    const unread = deck.filter(t => !readIds.has(t.id) && t.id !== excludeId);
+    let chosen = null;
+    if (unread.length > 0) chosen = unread[Math.floor(Math.random() * unread.length)];
+    else {
+      const full = deck.filter(t => t.id !== excludeId);
+      if (full.length > 0) chosen = full[Math.floor(Math.random() * full.length)];
+      else chosen = deck[0];
+    }
+    if (!chosen) {
+      chosen = {
+        id: "gen-" + Date.now(),
+        t: `${currentField} Strategy`,
+        domain: currentField,
+        level: currentLevel,
+        field: currentField,
+        insight: `Master the key principles of ${currentField} at the ${currentLevel} level.`,
+        prompt: "Exercise: Apply this framework to your active design project today."
+      };
+    }
+    chosen.resources = ensureTopicResources(chosen);
+    return chosen;
+  }
+
+  /* Universal Toast Notifications */
+  function showToast(message, type = 'info') {
+    let container = document.getElementById('toastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-10px)';
+      toast.style.transition = 'all 0.25s ease';
+      setTimeout(() => toast.remove(), 260);
+    }, 4500);
+  }
+
+  async function fetchAiTopic() {
+    if (!aiApiKey) return null;
+    try {
+      const res = await fetch('/api/ai/generate-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: aiProvider,
+          apiKey: aiApiKey,
+          baseUrl: aiBaseUrl,
+          model: aiModel,
+          level: currentLevel,
+          fieldOfStudy: currentField,
+          readHistory: readHistory,
+          currentTopicId: currentCardTopic ? currentCardTopic.id : null
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.status === 'success' && data.topic && data.topic.t) {
+          data.topic.isAi = true;
+          data.topic.level = currentLevel;
+          data.topic.field = currentField;
+          data.topic.resources = ensureTopicResources(data.topic);
+          return data.topic;
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.message || `${getProviderDisplayName(aiProvider)} generation failed. Using curated topic.`, 'warning');
+      }
+    } catch (e) {
+      console.warn('AI generator fallback to curated:', e.message);
+      showToast('Network error while connecting to AI. Using curated topic.', 'warning');
+    }
+    return null;
+  }
+
+  function fillCardData(topic) {
+    if (!topic) return;
+    topic.resources = ensureTopicResources(topic);
+    currentCardTopic = topic;
+
+    const isRead = readHistory.some(h => h.id === topic.id);
+
+    const statusPill = document.getElementById('cardStatusPill');
+    const aiPill = document.getElementById('cardAiPill');
+
+    if (topic.isAi) {
+      aiPill.style.display = 'inline-block';
+      const provName = aiProvider === 'openai' ? 'OpenAI' : aiProvider === 'anthropic' ? 'Claude' : aiProvider === 'groq' ? 'Groq' : 'Gemini';
+      aiPill.textContent = `${provName} AI`;
+    } else {
+      aiPill.style.display = 'none';
+    }
+
+    if (isRead) {
+      statusPill.textContent = 'Done';
+      statusPill.className = 'card-status-pill status-done';
+    } else {
+      statusPill.textContent = 'New Topic';
+      statusPill.className = 'card-status-pill status-new';
+    }
+
+    document.getElementById('cardDomain').textContent = topic.domain || currentField;
+    document.getElementById('topicTitle').textContent = topic.t;
+    document.getElementById('topicInsight').textContent = topic.insight;
+    document.getElementById('topicPrompt').textContent = topic.prompt;
+    
+    const itemLevel = topic.level || currentLevel;
+    const itemField = topic.field || currentField;
+    document.getElementById('cardLevelText').textContent = (itemLevel.charAt(0).toUpperCase() + itemLevel.slice(1)) + ' Path';
+    document.getElementById('cardFieldText').textContent = itemField;
+
+    const stamp = document.getElementById('cardStamp');
+    stamp.style.display = isRead ? 'block' : 'none';
+
+    document.getElementById('prevBtn').disabled = historyStack.length === 0;
+
+    const resBtn = document.getElementById('resourcesBtn');
+    if (resBtn) resBtn.style.display = 'flex';
+  }
+
+  async function renderCurrentOrNext(shouldTear = false, specificTopic = null) {
+    if (isAnimating || isAiGenerating) return;
+
+    let nextTopic = specificTopic;
+
+    if (!nextTopic && shouldTear) {
+      const drawBtn = document.getElementById('drawBtn');
+      const drawBtnText = document.getElementById('drawBtnText');
+      isAiGenerating = true;
+      drawBtnText.textContent = 'Generating...';
+      drawBtn.disabled = true;
+
+      const aiTopic = await fetchAiTopic();
+      nextTopic = aiTopic || pickCuratedFallback(currentCardTopic ? currentCardTopic.id : null);
+
+      isAiGenerating = false;
+      drawBtnText.textContent = 'Draw new topic';
+      drawBtn.disabled = false;
+    } else if (!nextTopic) {
+      nextTopic = pickCuratedFallback(currentCardTopic ? currentCardTopic.id : null);
+    }
+
+    if (!shouldTear) {
+      if (currentCardTopic && !specificTopic) historyStack.push(currentCardTopic);
+      fillCardData(nextTopic);
+      const card = document.getElementById('card');
+      card.classList.remove('card-settle');
+      void card.offsetWidth;
+      card.classList.add('card-settle');
+      return;
+    }
+
+    if (currentCardTopic && !specificTopic) historyStack.push(currentCardTopic);
+
+    isAnimating = true;
+    playTearSound();
+
+    const stage = document.getElementById('cardStage');
+    const oldCard = document.getElementById('card');
+    const tearingClone = oldCard.cloneNode(true);
+    tearingClone.id = 'tearingCardClone';
+    tearingClone.classList.add('paper-tearing-off');
+    stage.appendChild(tearingClone);
+
+    fillCardData(nextTopic);
+    oldCard.classList.remove('card-settle');
+    void oldCard.offsetWidth;
+    oldCard.classList.add('card-settle');
+
+    setTimeout(() => {
+      if (tearingClone.parentNode) tearingClone.parentNode.removeChild(tearingClone);
+      isAnimating = false;
+    }, 620);
+  }
+
+  function handleGoBack() {
+    if (historyStack.length === 0 || isAnimating || isAiGenerating) return;
+    const prevTopic = historyStack.pop();
+    if (prevTopic) {
+      fillCardData(prevTopic);
+      const card = document.getElementById('card');
+      card.classList.remove('card-settle');
+      void card.offsetWidth;
+      card.classList.add('card-settle');
+    }
+  }
+
+  function handleMarkAsRead() {
+    if (!currentCardTopic || isAnimating || isAiGenerating) return;
+
+    const existingIndex = readHistory.findIndex(h => h.id === currentCardTopic.id);
+    const now = new Date();
+    const entry = {
+      id: currentCardTopic.id,
+      title: currentCardTopic.t,
+      domain: currentCardTopic.domain || currentField,
+      level: currentCardTopic.level || currentLevel,
+      field: currentCardTopic.field || currentField,
+      dateRead: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      timeRead: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      timestamp: now.getTime()
+    };
+
+    if (existingIndex >= 0) {
+      readHistory[existingIndex] = entry;
+    } else {
+      readHistory.unshift(entry);
+    }
+
+    saveHistory();
+    renderHistoryList();
+
+    const stamp = document.getElementById('cardStamp');
+    stamp.style.display = 'block';
+
+    const statusPill = document.getElementById('cardStatusPill');
+    statusPill.textContent = 'Done';
+    statusPill.className = 'card-status-pill status-done';
+  }
+
+  /* Drawer & History */
+  const historyOverlay = document.getElementById('historyOverlay');
+  const openHistoryBtn = document.getElementById('openHistoryBtn');
+  const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+  const historyList = document.getElementById('historyList');
+  const historyBadge = document.getElementById('historyBadge');
+  const historySearchInput = document.getElementById('historySearchInput');
+  const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+  const tabActiveJournal = document.getElementById('tabActiveJournal');
+  const tabRecycleBin = document.getElementById('tabRecycleBin');
+  const tabCountActive = document.getElementById('tabCountActive');
+  const tabCountTrash = document.getElementById('tabCountTrash');
+
+  function updateHistoryBadge() {
+    historyBadge.textContent = readHistory.length;
+    tabCountActive.textContent = readHistory.length;
+    tabCountTrash.textContent = trashHistory.length;
+  }
+
+  tabActiveJournal.addEventListener('click', () => {
+    activeDrawerTab = 'active';
+    tabActiveJournal.classList.add('active');
+    tabRecycleBin.classList.remove('active');
+    document.getElementById('drawerFooter').style.display = 'flex';
+    document.getElementById('drawerProgressWrap').style.display = 'block';
+    renderHistoryList(historySearchInput.value);
+  });
+
+  tabRecycleBin.addEventListener('click', () => {
+    activeDrawerTab = 'trash';
+    tabRecycleBin.classList.add('active');
+    tabActiveJournal.classList.remove('active');
+    document.getElementById('drawerFooter').style.display = 'none';
+    document.getElementById('drawerProgressWrap').style.display = 'none';
+    renderHistoryList(historySearchInput.value);
+  });
+
+  function renderHistoryList(filterQuery = '') {
+    historyList.innerHTML = '';
+    const q = filterQuery.toLowerCase().trim();
+
+    if (activeDrawerTab === 'active') {
+      const filtered = readHistory.filter(item => {
+        if (!q) return true;
+        return item.title.toLowerCase().includes(q) || (item.domain || '').toLowerCase().includes(q) || (item.level || '').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'history-empty';
+        empty.innerHTML = `
+          <strong>${q ? 'No matching completed topics' : 'Journal is currently empty'}</strong><br/>
+          ${q ? 'Try another search term.' : 'Click "Mark as read" on any card to record it in your journal.'}
+        `;
+        historyList.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        const itemLevelDisplay = (item.level || 'Beginner').charAt(0).toUpperCase() + (item.level || 'Beginner').slice(1);
+        card.innerHTML = `
+          <div class="history-card-top">
+            <span>${itemLevelDisplay} · ${item.field || 'Product Design'}</span>
+            <span>${item.dateRead}</span>
+          </div>
+          <div class="history-card-title">${item.title}</div>
+          <div class="history-card-footer">
+            <span>${item.timeRead || ''}</span>
+            <button class="card-action-btn delete" data-id="${item.id}">Move to Trash</button>
+          </div>
+        `;
+
+        card.querySelector('.card-action-btn.delete').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteToTrash(item.id);
+        });
+
+        card.addEventListener('click', () => {
+          const deck = getDeckForFieldAndLevel(item.field || currentField, item.level || currentLevel);
+          const target = deck.find(t => t.id === item.id) || {
+            id: item.id,
+            t: item.title,
+            domain: item.domain || currentField,
+            level: item.level || currentLevel,
+            field: item.field || currentField,
+            insight: "From your reading journal.",
+            prompt: "Review your past takeaways for this topic."
+          };
+          if (target) {
+            if (item.level) {
+              currentLevel = item.level;
+              document.querySelectorAll('.level-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.level === currentLevel));
+            }
+            if (item.field) {
+              currentField = item.field;
+              document.getElementById('fieldOfStudySelect').value = currentField;
+            }
+            updateMasteryProgress();
+            fillCardData(target);
+            closeHistory();
+          }
+        });
+
+        historyList.appendChild(card);
+      });
+    } else {
+      const now = Date.now();
+      const filtered = trashHistory.filter(item => {
+        if (!q) return true;
+        return item.title.toLowerCase().includes(q) || (item.domain || '').toLowerCase().includes(q);
+      });
+
+      if (filtered.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'history-empty';
+        empty.innerHTML = `
+          <strong>Recycle Bin is empty</strong><br/>
+          Topics cleared from journal are stored here for 15 days before permanent removal.
+        `;
+        historyList.appendChild(empty);
+        return;
+      }
+
+      filtered.forEach(item => {
+        const daysLeft = Math.max(0, Math.ceil((15 * 86400000 - (now - item.deletedAt)) / 86400000));
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.innerHTML = `
+          <div class="history-card-top">
+            <span style="color:#A82828;">Trash · ${daysLeft} days left</span>
+            <span>${item.dateRead || ''}</span>
+          </div>
+          <div class="history-card-title">${item.title}</div>
+          <div class="history-card-footer">
+            <span style="font-size:11px; color:var(--ink-soft);">${item.domain || 'Design'}</span>
+            <button class="card-action-btn restore" data-id="${item.id}">Restore</button>
+          </div>
+        `;
+
+        card.querySelector('.card-action-btn.restore').addEventListener('click', (e) => {
+          e.stopPropagation();
+          restoreFromTrash(item.id);
+        });
+
+        historyList.appendChild(card);
+      });
+    }
+  }
+
+  function deleteToTrash(id) {
+    const item = readHistory.find(h => h.id === id);
+    if (!item) return;
+    item.deletedAt = Date.now();
+    trashHistory.unshift(item);
+    readHistory = readHistory.filter(h => h.id !== id);
+    saveHistory();
+    renderHistoryList(historySearchInput.value);
+    if (currentCardTopic && currentCardTopic.id === id) fillCardData(currentCardTopic);
+  }
+
+  function restoreFromTrash(id) {
+    const item = trashHistory.find(h => h.id === id);
+    if (!item) return;
+    delete item.deletedAt;
+    readHistory.unshift(item);
+    trashHistory = trashHistory.filter(h => h.id !== id);
+    saveHistory();
+    renderHistoryList(historySearchInput.value);
+    if (currentCardTopic && currentCardTopic.id === id) fillCardData(currentCardTopic);
+  }
+
+  function openHistory() {
+    renderHistoryList();
+    historyOverlay.classList.add('open');
+  }
+
+  function closeHistory() {
+    historyOverlay.classList.remove('open');
+  }
+
+  openHistoryBtn.addEventListener('click', openHistory);
+  closeHistoryBtn.addEventListener('click', closeHistory);
+  historyOverlay.addEventListener('click', (e) => {
+    if (e.target === historyOverlay) closeHistory();
+  });
+
+  historySearchInput.addEventListener('input', (e) => renderHistoryList(e.target.value));
+
+  const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+  const cancelClearModal = document.getElementById('cancelClearModal');
+  const confirmClearAction = document.getElementById('confirmClearAction');
+
+  clearHistoryBtn.addEventListener('click', () => {
+    if (readHistory.length === 0) {
+      alert('Your Reading Journal is already empty.');
+      return;
+    }
+    confirmModalOverlay.classList.add('open');
+  });
+
+  cancelClearModal.addEventListener('click', () => confirmModalOverlay.classList.remove('open'));
+  confirmModalOverlay.addEventListener('click', (e) => {
+    if (e.target === confirmModalOverlay) confirmModalOverlay.classList.remove('open');
+  });
+
+  confirmClearAction.addEventListener('click', () => {
+    const now = Date.now();
+    const newlyDeleted = readHistory.map(item => ({ ...item, deletedAt: now }));
+    trashHistory = [...newlyDeleted, ...trashHistory];
+    readHistory = [];
+    saveHistory();
+    confirmModalOverlay.classList.remove('open');
+    renderHistoryList();
+    if (currentCardTopic) fillCardData(currentCardTopic);
+  });
+
+  /* =========================================================================
+     SMART AI SETUP & AUTOMATIC PROVIDER DETECTION
+     ========================================================================= */
+  const aiModalOverlay = document.getElementById('aiModalOverlay');
+  const aiSetupBtn = document.getElementById('aiSetupBtn');
+  const cancelAiModal = document.getElementById('cancelAiModal');
+  const saveAiKeyBtn = document.getElementById('saveAiKeyBtn');
+  const testAiKeyBtn = document.getElementById('testAiKeyBtn');
+  const clearAiKeyBtn = document.getElementById('clearAiKeyBtn');
+  const aiApiKeyInput = document.getElementById('aiApiKeyInput');
+  const toggleAiKeyVisibility = document.getElementById('toggleAiKeyVisibility');
+  const providerGuideBox = document.getElementById('providerGuideBox');
+  const aiTestStatusBox = document.getElementById('aiTestStatusBox');
+
+  function detectProvider(key) {
+    if (!key) return 'gemini';
+    const k = key.trim();
+    if (k.startsWith('sk-ant-')) return 'anthropic';
+    if (k.startsWith('gsk_')) return 'groq';
+    if (k.startsWith('sk-or-')) return 'openrouter';
+    if (k.startsWith('sk-proj-') || k.startsWith('sk-') || k.startsWith('sess-')) return 'openai';
+    if (k.startsWith('AIza') || k.length >= 35) return 'gemini';
+    return 'gemini';
+  }
+
+  function getProviderDisplayName(providerKey) {
+    switch (providerKey) {
+      case 'openai': return 'OpenAI (GPT-4o)';
+      case 'anthropic': return 'Anthropic Claude (3.5 Sonnet)';
+      case 'groq': return 'Groq (Llama 3.3)';
+      case 'openrouter': return 'OpenRouter';
+      case 'gemini':
+      default: return 'Google Gemini (Free Tier)';
+    }
+  }
+
+  function updateKeyGuideUI(key) {
+    const detected = detectProvider(key);
+    const name = getProviderDisplayName(detected);
+    if (!key) {
+      providerGuideBox.innerHTML = `
+        <strong>💡 Smart Auto-Detection:</strong> Paste your API key from any provider below.<br/>
+        • <strong>Google Gemini:</strong> 100% free tier. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--purple); font-weight:700; text-decoration:underline;">Get Free Gemini Key ↗</a><br/>
+        • <strong>OpenAI / Claude / Groq:</strong> Supported automatically.
+      `;
+    } else {
+      providerGuideBox.innerHTML = `
+        <div style="color:var(--green); font-weight:700; margin-bottom:3px;">
+          ✨ Detected Model: ${name}
+        </div>
+        Your key format is recognized. Click <strong>Test Key</strong> to verify connection or <strong>Save & Activate</strong> to use.
+      `;
+    }
+  }
+
+  aiApiKeyInput.addEventListener('input', (e) => {
+    updateKeyGuideUI(e.target.value);
+    aiTestStatusBox.style.display = 'none';
+  });
+
+  aiSetupBtn.addEventListener('click', () => {
+    aiApiKeyInput.value = aiApiKey;
+    aiTestStatusBox.style.display = 'none';
+    updateKeyGuideUI(aiApiKey);
+    aiModalOverlay.classList.add('open');
+  });
+
+  cancelAiModal.addEventListener('click', () => aiModalOverlay.classList.remove('open'));
+  aiModalOverlay.addEventListener('click', (e) => {
+    if (e.target === aiModalOverlay) aiModalOverlay.classList.remove('open');
+  });
+
+  toggleAiKeyVisibility.addEventListener('click', () => {
+    if (aiApiKeyInput.type === 'password') {
+      aiApiKeyInput.type = 'text';
+      toggleAiKeyVisibility.textContent = 'Hide';
+    } else {
+      aiApiKeyInput.type = 'password';
+      toggleAiKeyVisibility.textContent = 'Show';
+    }
+  });
+
+  testAiKeyBtn.addEventListener('click', async () => {
+    const key = aiApiKeyInput.value.trim() || aiApiKey;
+    if (!key) {
+      aiTestStatusBox.className = 'test-status-box error';
+      aiTestStatusBox.textContent = 'Please paste an API key first.';
+      aiTestStatusBox.style.display = 'block';
+      return;
+    }
+
+    const detected = detectProvider(key);
+    aiTestStatusBox.className = 'test-status-box';
+    aiTestStatusBox.style.display = 'block';
+    aiTestStatusBox.style.background = '#FAF7F0';
+    aiTestStatusBox.style.color = 'var(--ink)';
+    aiTestStatusBox.textContent = `Testing connection to ${getProviderDisplayName(detected)}...`;
+
+    try {
+      const res = await fetch('/api/ai/test-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: detected, apiKey: key })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        aiTestStatusBox.className = 'test-status-box success';
+        aiTestStatusBox.textContent = (data.message || 'API key is valid and connected!');
+      } else {
+        aiTestStatusBox.className = 'test-status-box error';
+        aiTestStatusBox.textContent = 'Error: ' + (data.error || 'Invalid API Key or Billing Limit reached.');
+      }
+    } catch (err) {
+      aiTestStatusBox.className = 'test-status-box error';
+      aiTestStatusBox.textContent = 'Network error: ' + err.message;
+    }
+  });
+
+  saveAiKeyBtn.addEventListener('click', () => {
+    aiApiKey = aiApiKeyInput.value.trim();
+    aiProvider = detectProvider(aiApiKey);
+
+    localStorage.setItem(STORAGE_AI_PROVIDER_KEY, aiProvider);
+    if (aiApiKey) {
+      localStorage.setItem(STORAGE_AI_KEY, aiApiKey);
+      showToast(`Activated ${getProviderDisplayName(aiProvider)}! Drawing tailored topic...`, 'success');
+    } else {
+      localStorage.removeItem(STORAGE_AI_KEY);
+      showToast('AI Key removed. Switched to curated curriculum.', 'info');
+    }
+
+    aiModalOverlay.classList.remove('open');
+    checkAiStatus();
+    renderCurrentOrNext(true);
+  });
+
+  clearAiKeyBtn.addEventListener('click', () => {
+    aiApiKey = '';
+    aiApiKeyInput.value = '';
+    localStorage.removeItem(STORAGE_AI_KEY);
+    aiTestStatusBox.style.display = 'none';
+    updateKeyGuideUI('');
+    checkAiStatus();
+    showToast('AI Key removed.', 'info');
+  });
+
+  /* =========================================================================
+     INTERACTIVE TOPIC RESOURCES MODAL
+     ========================================================================= */
+  const resourcesBtn = document.getElementById('resourcesBtn');
+  const resourcesModalOverlay = document.getElementById('resourcesModalOverlay');
+  const closeResourcesModalBtn = document.getElementById('closeResourcesModalBtn');
+  const tabResArticles = document.getElementById('tabResArticles');
+  const tabResVideos = document.getElementById('tabResVideos');
+  const tabResWebsites = document.getElementById('tabResWebsites');
+  const resourcesList = document.getElementById('resourcesList');
+  let currentActiveResourceTab = 'articles';
+
+  function openResourcesModal() {
+    resourcesModalOverlay.classList.add('open');
+    renderResourcesList();
+  }
+
+  if (resourcesBtn) resourcesBtn.addEventListener('click', openResourcesModal);
+  closeResourcesModalBtn.addEventListener('click', () => resourcesModalOverlay.classList.remove('open'));
+  resourcesModalOverlay.addEventListener('click', (e) => {
+    if (e.target === resourcesModalOverlay) resourcesModalOverlay.classList.remove('open');
+  });
+
+  function renderResourcesList() {
+    resourcesList.innerHTML = '';
+    tabResArticles.classList.toggle('active', currentActiveResourceTab === 'articles');
+    tabResVideos.classList.toggle('active', currentActiveResourceTab === 'videos');
+    tabResWebsites.classList.toggle('active', currentActiveResourceTab === 'websites');
+
+    const res = currentCardTopic ? ensureTopicResources(currentCardTopic) : null;
+    let items = [];
+    if (res) {
+      if (currentActiveResourceTab === 'articles') items = res.articles || [];
+      else if (currentActiveResourceTab === 'videos') items = res.videos || [];
+      else items = res.websites || [];
+    }
+
+    if (items.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'history-empty';
+      empty.innerHTML = `<strong>No ${currentActiveResourceTab} available for this topic</strong>`;
+      resourcesList.appendChild(empty);
+      return;
+    }
+
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      const icon = currentActiveResourceTab === 'articles' ? '📄' : currentActiveResourceTab === 'videos' ? '🎥' : '🌐';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">${icon}</span>
+            <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="color:var(--ink); font-weight:600; font-size:13.5px; text-decoration:none; line-height:1.4;">
+              ${item.title}
+            </a>
+          </div>
+          <a href="${item.url}" target="_blank" rel="noopener noreferrer" style="color:var(--purple); font-weight:700; font-size:12px; white-space:nowrap; text-decoration:none; padding:4px 8px; border:1px solid var(--purple); border-radius:4px; background:var(--purple-light);">
+            Open ↗
+          </a>
+        </div>
+      `;
+      resourcesList.appendChild(card);
+    });
+  }
+
+  tabResArticles.addEventListener('click', () => { currentActiveResourceTab = 'articles'; renderResourcesList(); });
+  tabResVideos.addEventListener('click', () => { currentActiveResourceTab = 'videos'; renderResourcesList(); });
+  tabResWebsites.addEventListener('click', () => { currentActiveResourceTab = 'websites'; renderResourcesList(); });
+
+  /* =========================================================================
+     FIELD & LEVEL CONTROLS & LOGO REFRESH
+     ========================================================================= */
+  const fieldSelect = document.getElementById('fieldOfStudySelect');
+  fieldSelect.value = currentField;
+
+  fieldSelect.addEventListener('change', (e) => {
+    currentField = e.target.value;
+    localStorage.setItem(STORAGE_FIELD_KEY, currentField);
+    updateMasteryProgress();
+    renderCurrentOrNext(true);
+  });
+
+  document.querySelectorAll('.level-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLevel = btn.dataset.level;
+      updateMasteryProgress();
+      renderCurrentOrNext(true);
+    });
+  });
+
+  const brandBadge = document.querySelector('.brand-badge');
+  if (brandBadge) {
+    brandBadge.addEventListener('click', () => {
+      renderCurrentOrNext(true);
+    });
+  }
+
+  document.getElementById('bannerLevelUpBtn').addEventListener('click', () => {
+    const nextLevel = currentLevel === 'beginner' ? 'intermediate' : currentLevel === 'intermediate' ? 'advanced' : 'beginner';
+    currentLevel = nextLevel;
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.toggle('active', b.dataset.level === currentLevel));
+    updateMasteryProgress();
+    renderCurrentOrNext(true);
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', handleGoBack);
+  document.getElementById('drawBtn').addEventListener('click', () => renderCurrentOrNext(true));
+  document.getElementById('markReadBtn').addEventListener('click', handleMarkAsRead);
+
+  const soundToggle = document.getElementById('soundToggle');
+  function updateSoundUI() {
+    soundToggle.innerHTML = isSoundEnabled ? '<span>Tear sound: On</span>' : '<span>Tear sound: Off</span>';
+  }
+  soundToggle.addEventListener('click', () => {
+    isSoundEnabled = !isSoundEnabled;
+    try { localStorage.setItem(STORAGE_SOUND_KEY, isSoundEnabled ? "true" : "false"); } catch(e){}
+    updateSoundUI();
+  });
+  updateSoundUI();
+
+  /* =========================================================================
+     LIVE TICKING STUDY TIMER & DOCUMENT PICTURE-IN-PICTURE (AUTO-PIP)
+     ========================================================================= */
+  let sessionSeconds = 0;
+  const liveTimerDigits = document.getElementById('liveTimerDigits');
+  const manualPipBtn = document.getElementById('manualPipBtn');
+  let pipWindow = null;
+  let isAutoPipActive = true;
+
+  function formatTimerDigits(totalSeconds) {
+    const hrs = Math.floor(totalSeconds / 3600);
+    const mins = Math.floor((totalSeconds % 3600) / 60);
+    const secs = totalSeconds % 60;
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  }
+
+  function updateLiveTimerUI() {
+    const formatted = formatTimerDigits(sessionSeconds);
+    if (liveTimerDigits) liveTimerDigits.textContent = formatted;
+
+    // Also update PiP window live timer if open
+    if (pipWindow && pipWindow.document) {
+      const pipTimerEl = pipWindow.document.getElementById('pipTimerDisplay');
+      if (pipTimerEl) pipTimerEl.textContent = formatted;
+    }
+  }
+
+  // Tick live timer every 1000ms
+  setInterval(() => {
+    sessionSeconds++;
+    updateLiveTimerUI();
+  }, 1000);
+
+  // Document Picture-in-Picture Window Creation
+  async function openDocumentPipWindow() {
+    if (!('documentPictureInPicture' in window)) return;
+    if (pipWindow) return; // already active
+
+    try {
+      pipWindow = await window.documentPictureInPicture.requestWindow({
+        width: 380,
+        height: 270
+      });
+
+      // Copy all stylesheets and fonts to PiP head
+      [...document.styleSheets].forEach((styleSheet) => {
+        try {
+          const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join('');
+          const style = document.createElement('style');
+          style.textContent = cssRules;
+          pipWindow.document.head.appendChild(style);
+        } catch (e) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.type = styleSheet.type;
+          link.media = styleSheet.media;
+          link.href = styleSheet.href;
+          pipWindow.document.head.appendChild(link);
+        }
+      });
+
+      const topic = currentCardTopic || {
+        t: 'Product Design Mastery',
+        insight: 'Keep practicing while multi-tasking across tabs.',
+        domain: currentField,
+        prompt: 'Exercise: Connect core UX principles to your daily design flow.'
+      };
+
+      const pipBody = pipWindow.document.body;
+      pipBody.style.margin = '0';
+      pipBody.style.padding = '10px';
+      pipBody.style.background = '#F6F3EC';
+      pipBody.style.fontFamily = "'Roboto Slab', serif";
+      pipBody.style.display = 'flex';
+      pipBody.style.flexDirection = 'column';
+      pipBody.style.justifyContent = 'space-between';
+      pipBody.style.height = '100vh';
+      pipBody.style.boxSizing = 'border-box';
+      pipBody.style.overflow = 'hidden';
+
+      pipBody.innerHTML = `
+        <div id="pipCardContainer" style="background:#FFFDF9; border:1.5px solid #D5CBBA; border-radius:10px; padding:12px; height:100%; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 8px 24px rgba(17,26,36,0.1); cursor:pointer; user-select:none; transition:transform 0.15s ease, border-color 0.15s ease;">
+          <div>
+            <!-- Large Hero Timer Box -->
+            <div style="background:linear-gradient(135deg, #FAF8F2 0%, #EDE7D8 100%); border:1px solid #D5CBBA; border-radius:8px; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; box-shadow:inset 0 1px 0 rgba(255,255,255,0.9);">
+              <div>
+                <div style="font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:#7D6A53; display:flex; align-items:center; gap:5px;">
+                  <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#1B733F; box-shadow:0 0 6px #1B733F;"></span>
+                  Focus Timer
+                </div>
+                <div id="pipTimerDisplay" style="font-size:22px; font-weight:800; color:#111A24; font-family:'Roboto Slab', serif; letter-spacing:0.04em; line-height:1.15; margin-top:2px;">
+                  ${formatTimerDigits(sessionSeconds)}
+                </div>
+              </div>
+              <span style="font-size:10px; font-weight:700; background:#FFF; border:1px solid #D5CBBA; padding:3px 8px; border-radius:6px; color:#111A24; text-transform:capitalize;">
+                ${currentLevel} · ${topic.domain || currentField}
+              </span>
+            </div>
+
+            <!-- Topic Title & Quick Insight -->
+            <div style="font-family:'Fraunces',serif; font-size:15px; font-weight:700; color:#111A24; line-height:1.25; margin-bottom:5px;">
+              ${topic.t}
+            </div>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:11px; color:#3E4B5B; line-height:1.35; background:#FAF7F0; padding:6px 8px; border-left:3px solid #A8761E; border-radius:0 4px 4px 0;">
+              ${topic.insight ? (topic.insight.length > 105 ? topic.insight.slice(0, 105) + '...' : topic.insight) : ''}
+            </div>
+          </div>
+
+          <!-- Bottom Expand / Return Action -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-top:6px; border-top:1px dashed #D5CBBA; font-size:10.5px;">
+            <span style="color:#7D6A53; font-weight:600;">LevelUP Designers</span>
+            <span style="color:#A8761E; font-weight:800; display:inline-flex; align-items:center; gap:3px; background:#F8EDD8; padding:3px 8px; border-radius:4px; border:1px solid #DFCEB0;">
+              Click to Expand ↗
+            </span>
+          </div>
+        </div>
+      `;
+
+      // Expand and return to original tab when clicked
+      const cardEl = pipBody.querySelector('#pipCardContainer');
+      if (cardEl) {
+        cardEl.addEventListener('mouseenter', () => {
+          cardEl.style.transform = 'scale(1.015)';
+          cardEl.style.borderColor = '#A8761E';
+        });
+        cardEl.addEventListener('mouseleave', () => {
+          cardEl.style.transform = 'scale(1)';
+          cardEl.style.borderColor = '#D5CBBA';
+        });
+        cardEl.addEventListener('click', () => {
+          window.focus();
+          closeDocumentPipWindow();
+        });
+      }
+
+      pipWindow.addEventListener('pagehide', () => {
+        pipWindow = null;
+      });
+    } catch (err) {
+      console.warn('PiP window request:', err.message);
+      pipWindow = null;
+    }
+  }
+
+  function closeDocumentPipWindow() {
+    if (pipWindow) {
+      try { pipWindow.close(); } catch(e){}
+      pipWindow = null;
+    }
+  }
+
+  // 2. Listen for 'visibilitychange' event (when switching tabs or minimizing)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      // User switched to another tab or minimized -> Open tiny PiP companion window
+      if (isAutoPipActive && 'documentPictureInPicture' in window) {
+        openDocumentPipWindow();
+      }
+    } else if (document.visibilityState === 'visible') {
+      // 4. User switched back to the original tab -> Automatically close PiP!
+      closeDocumentPipWindow();
+    }
+  });
+
+  // Manual PiP button trigger
+  if (manualPipBtn) {
+    manualPipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (pipWindow) {
+        closeDocumentPipWindow();
+      } else {
+        openDocumentPipWindow();
+      }
+    });
+  }
+
+  /* =========================================================================
+     GRAPHITE BOLD POP STICKERS (Slow Leaf-Drifting Spread Physics, No Icons)
+     ========================================================================= */
+  const STICKER_DEFS = [
+    { id: 's1', text: 'Figma is my cardio.', cls: 'sticker-cardio', rot: -7, xPct: 3, yPct: 15 },
+    { id: 's2', text: 'Final_final_v7.fig', cls: 'sticker-finalv7', rot: 9, xPct: 3.5, yPct: 38 },
+    { id: 's3', text: 'Can u do it for free?', cls: 'sticker-forfree', rot: -12, xPct: 2.5, yPct: 62 },
+    { id: 's4', text: 'I need Coffee', cls: 'sticker-coffee', rot: 8, xPct: 3.5, yPct: 83 },
+    { id: 's5', text: 'Just one tiny change.', cls: 'sticker-tinychange', rot: 12, xPct: 83, yPct: 15 },
+    { id: 's6', text: 'learn Ai', cls: 'sticker-learnai', rot: -9, xPct: 85, yPct: 38 },
+    { id: 's7', text: 'Ai will replace you', cls: 'sticker-replace', rot: 11, xPct: 83, yPct: 62 },
+    { id: 's8', text: 'I can do it better', cls: 'sticker-better', rot: -7, xPct: 84, yPct: 83 },
+    { id: 's9', text: 'Make it POP!', cls: 'sticker-makeitpop', rot: -5, xPct: 20, yPct: 9 },
+    { id: 's10', text: '0 Errors, 1000 UX Issues', cls: 'sticker-uxissues', rot: 7, xPct: 67, yPct: 9 },
+    { id: 's11', text: 'Cmd + Z is Life', cls: 'sticker-cmdz', rot: 6, xPct: 22, yPct: 89 },
+    { id: 's12', text: 'Auto-Layout Everything', cls: 'sticker-autolayout', rot: -10, xPct: 65, yPct: 89 }
+  ];
+
+  const stickersContainer = document.getElementById('stickersLayer');
+  const stickerObjects = [];
+
+  function initDesignerStickers() {
+    if (!stickersContainer) return;
+    stickersContainer.innerHTML = '';
+    stickerObjects.length = 0;
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    STICKER_DEFS.forEach((def, index) => {
+      const el = document.createElement('div');
+      el.className = `designer-sticker ${def.cls}`;
+      el.innerHTML = `<span>${def.text}</span>`;
+      stickersContainer.appendChild(el);
+
+      const posX = (def.xPct / 100) * vw;
+      const posY = (def.yPct / 100) * vh;
+
+      const obj = {
+        idIndex: index,
+        el,
+        baseX: posX,
+        baseY: posY,
+        x: posX,
+        y: posY,
+        vx: 0,
+        vy: 0,
+        baseRot: def.rot,
+        rot: def.rot,
+        rotVel: 0,
+        returnCooldown: 0,
+        isDragging: false,
+        dragOffsetX: 0,
+        dragOffsetY: 0
+      };
+
+      // Pointer drag interaction
+      el.addEventListener('pointerdown', (e) => {
+        obj.isDragging = true;
+        obj.dragOffsetX = e.clientX - obj.x;
+        obj.dragOffsetY = e.clientY - obj.y;
+        obj.returnCooldown = Date.now() + 3500;
+        el.setPointerCapture(e.pointerId);
+      });
+
+      el.addEventListener('pointermove', (e) => {
+        if (obj.isDragging) {
+          obj.x = e.clientX - obj.dragOffsetX;
+          obj.y = e.clientY - obj.dragOffsetY;
+          obj.vx = 0;
+          obj.vy = 0;
+        }
+      });
+
+      el.addEventListener('pointerup', (e) => {
+        if (obj.isDragging) {
+          obj.isDragging = false;
+          obj.returnCooldown = Date.now() + 3500;
+          try { el.releasePointerCapture(e.pointerId); } catch(err){}
+        }
+      });
+
+      stickerObjects.push(obj);
+    });
+  }
+
+  initDesignerStickers();
+  window.addEventListener('resize', initDesignerStickers);
+
+  // Dynamic Mouse Movement: Stickers gently disperse and float away like leaves
+  let mouseX = -1000;
+  let mouseY = -1000;
+
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    const REPULSION_RADIUS = 210;
+
+    stickerObjects.forEach((stk) => {
+      if (stk.isDragging) return;
+
+      const rect = stk.el.getBoundingClientRect();
+      const centerX = stk.x + rect.width / 2;
+      const centerY = stk.y + rect.height / 2;
+
+      const dx = centerX - mouseX;
+      const dy = centerY - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist < REPULSION_RADIUS && dist > 1) {
+        // Slow, gentle leaf-drifting impulse
+        const force = Math.pow(1 - dist / REPULSION_RADIUS, 1.4) * 3.6;
+        const angle = Math.atan2(dy, dx);
+        stk.vx += Math.cos(angle) * force;
+        stk.vy += Math.sin(angle) * force;
+        stk.rotVel += (Math.cos(angle) * 1.5);
+        // Keep stickers dispersed for ~3.5 seconds before returning
+        stk.returnCooldown = Date.now() + 3500;
+      }
+    });
+  });
+
+  // Physics animation loop: Slow leaf drift and delayed smooth recovery
+  function animateStickersPhysics() {
+    const now = Date.now();
+
+    stickerObjects.forEach((stk) => {
+      if (!stk.isDragging) {
+        // High air resistance / gentle floating friction
+        stk.vx *= 0.94;
+        stk.vy *= 0.94;
+        stk.rotVel *= 0.92;
+
+        // Subtle leaf flutter sway
+        stk.vy += Math.sin(now * 0.002 + stk.idIndex) * 0.06;
+
+        // After a few seconds, gently and slowly float back home
+        if (now > stk.returnCooldown) {
+          const returnSpeed = 0.012; // Slow gentle return
+          stk.vx += (stk.baseX - stk.x) * returnSpeed;
+          stk.vy += (stk.baseY - stk.y) * returnSpeed;
+          stk.rot += (stk.baseRot - stk.rot) * 0.035;
+        }
+
+        stk.x += stk.vx;
+        stk.y += stk.vy;
+        stk.rot += stk.rotVel;
+      }
+
+      stk.el.style.transform = `translate3d(${stk.x}px, ${stk.y}px, 0) rotate(${stk.rot}deg)`;
+    });
+
+    requestAnimationFrame(animateStickersPhysics);
+  }
+
+  requestAnimationFrame(animateStickersPhysics);
+
+  // Initialization
+  checkAiStatus();
+  updateMasteryProgress();
+  updateHistoryBadge();
+  if (!currentCardTopic) {
+    renderCurrentOrNext(false);
+  }
+</script>
+</body>
+</html>
