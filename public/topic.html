@@ -405,10 +405,10 @@
 
   .card-underlay {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    right: 5px;
-    bottom: -5px;
+    top: 2px;
+    left: 3px;
+    right: 3px;
+    bottom: 0px;
     background: #EBE4D2;
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
@@ -417,24 +417,24 @@
 
   .card-underlay-2 {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: -10px;
+    top: 4px;
+    left: 6px;
+    right: 6px;
+    bottom: 0px;
     background: #E2D8BF;
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     z-index: 0;
   }
 
-  /* Scaled-Up Card with Generous Typography (Aa Mode) */
+  /* Scaled-Up Card with Contained Paper Shadow (Aa Mode) */
   .card {
     position: relative;
     background: #FFFDF9 url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.04"/></svg>');
-    border: 1px solid var(--border-card);
+    border: 1.5px solid var(--border-card);
     border-radius: 6px;
     padding: clamp(18px, 3vh, 30px) clamp(24px, 3.8vw, 38px) clamp(16px, 2.5vh, 24px);
-    box-shadow: var(--card-shadow-elevated), 0 24px 48px -12px rgba(17, 26, 36, 0.2);
+    box-shadow: 0 3px 10px rgba(17, 26, 36, 0.05), 0 1px 3px rgba(0,0,0,0.02);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -1707,7 +1707,7 @@
     width: 0%;
     background: linear-gradient(90deg, #A8761E, #D4A853);
     border-radius: 99px;
-    transition: width 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: width 3.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .preloader-hint {
     font-size: 11px;
@@ -1722,6 +1722,161 @@
   @keyframes preloaderBlink {
     0% { opacity: 0.35; }
     100% { opacity: 1; }
+  }
+
+  /* =========================================================================
+     INTERACTIVE SITE TOUR & SPOTLIGHT WALKTHROUGH
+     ========================================================================= */
+  .tour-trigger-btn {
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 700;
+    background: #FAF7F0;
+    color: var(--gold);
+    border: 1px solid rgba(168, 118, 30, 0.4);
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s ease;
+  }
+  .tour-trigger-btn:hover {
+    background: var(--gold);
+    color: #FFF;
+    border-color: var(--gold);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(168, 118, 30, 0.25);
+  }
+
+  .tour-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    background: rgba(17, 26, 36, 0.58);
+    backdrop-filter: blur(3px);
+    display: none;
+    pointer-events: auto;
+    transition: opacity 0.3s ease;
+  }
+  .tour-overlay.open { display: block; }
+
+  .tour-spotlight-box {
+    position: absolute;
+    border-radius: 10px;
+    box-shadow: 0 0 0 9999px rgba(17, 26, 36, 0.62), 0 0 0 3px #A8761E, 0 8px 32px rgba(0,0,0,0.3);
+    pointer-events: none;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 100001;
+  }
+
+  .tour-popover {
+    position: absolute;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    background: #FFFDF9;
+    border: 1.5px solid #D5CBBA;
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(17, 26, 36, 0.25);
+    padding: 16px 18px 14px;
+    z-index: 100002;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: var(--font-sans);
+  }
+
+  .tour-popover-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .tour-step-badge {
+    font-family: var(--font-slab);
+    font-size: 11px;
+    font-weight: 700;
+    color: #A8761E;
+    background: #FAF7F0;
+    border: 1px solid #DFCEB0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tour-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    cursor: pointer;
+    padding: 2px 6px;
+    line-height: 1;
+    border-radius: 4px;
+  }
+  .tour-close-btn:hover { color: var(--ink); background: #FAF7F0; }
+
+  .tour-popover-title {
+    font-family: var(--font-heading);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 6px 0;
+    line-height: 1.25;
+  }
+  .tour-popover-body {
+    font-size: 12.5px;
+    color: #3E4B5B;
+    line-height: 1.5;
+    margin: 0 0 12px 0;
+  }
+  .tour-popover-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border-subtle);
+  }
+  .tour-dots {
+    display: flex;
+    gap: 5px;
+  }
+  .tour-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 99px;
+    background: #D5CBBA;
+    transition: all 0.2s ease;
+  }
+  .tour-dot.active {
+    width: 14px;
+    background: #A8761E;
+  }
+  .tour-nav-btns {
+    display: flex;
+    gap: 6px;
+  }
+  .tour-btn {
+    font-family: var(--font-slab);
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1px solid var(--border-card);
+    background: #FFF;
+    color: var(--ink);
+    transition: all 0.15s ease;
+  }
+  .tour-btn:hover { background: #FAF7F0; }
+  .tour-btn.tour-btn-primary {
+    background: #A8761E;
+    color: #FFF;
+    border-color: #A8761E;
+    font-weight: 700;
+  }
+  .tour-btn.tour-btn-primary:hover {
+    background: #8F6215;
   }
 
   /* =========================================================================
@@ -1962,6 +2117,9 @@
       <span>LevelUP Designers</span>
     </div>
     <div class="header-actions">
+      <button class="tour-trigger-btn" id="startTourBtn" title="Take an interactive tour of LevelUP features">
+        <span>Guide 💡</span>
+      </button>
       <button class="ai-status-pill" id="aiSetupBtn" title="Connect Gemini, OpenAI, Claude, or Groq API">
         <span id="aiPillText">AI Setup</span>
       </button>
@@ -2308,6 +2466,33 @@
 
       <div class="history-list" id="resourcesList" style="padding:0; min-height:150px; max-height:40vh;">
         <!-- Dynamically injected resource items -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Spotlight Site Tour Overlay -->
+  <div id="tourOverlay" class="tour-overlay" aria-modal="true" role="dialog" aria-label="Interactive Site Tour">
+    <div id="tourSpotlightBox" class="tour-spotlight-box"></div>
+    <div id="tourPopover" class="tour-popover">
+      <div class="tour-popover-head">
+        <span class="tour-step-badge" id="tourStepBadge">Step 1 of 6</span>
+        <button class="tour-close-btn" id="tourCloseBtn" title="Close tour" aria-label="Close tour">✕</button>
+      </div>
+      <h3 class="tour-popover-title" id="tourPopoverTitle">Daily Practice Card</h3>
+      <p class="tour-popover-body" id="tourPopoverBody">Each card presents a bite-sized concept with a core insight and an actionable design prompt to practice immediately.</p>
+      <div class="tour-popover-foot">
+        <div class="tour-dots" id="tourDots">
+          <div class="tour-dot active"></div>
+          <div class="tour-dot"></div>
+          <div class="tour-dot"></div>
+          <div class="tour-dot"></div>
+          <div class="tour-dot"></div>
+          <div class="tour-dot"></div>
+        </div>
+        <div class="tour-nav-btns">
+          <button class="tour-btn" id="tourPrevBtn">Back</button>
+          <button class="tour-btn tour-btn-primary" id="tourNextBtn">Next →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -4425,7 +4610,7 @@ Respond strictly in valid JSON with no backticks matching this schema:
 
   requestAnimationFrame(animateStickersPhysics);
 
-  // Preloader controller
+  // Preloader controller (Comfortable 3.5s reading duration)
   const appPreloader = document.getElementById('appPreloader');
   const preloaderProgressFill = document.getElementById('preloaderProgressFill');
   
@@ -4438,13 +4623,180 @@ Respond strictly in valid JSON with no backticks matching this schema:
     appPreloader.classList.add('fade-out');
     setTimeout(() => {
       if (appPreloader && appPreloader.parentNode) appPreloader.parentNode.removeChild(appPreloader);
+      // Auto-start tour for first-time visitors once preloader clears
+      if (!localStorage.getItem('levelup_tour_seen_v2')) {
+        setTimeout(startTour, 400);
+      }
     }, 650);
   }
 
   if (appPreloader) {
     appPreloader.addEventListener('click', dismissPreloader);
-    setTimeout(dismissPreloader, 1500);
+    setTimeout(dismissPreloader, 3500);
   }
+
+  /* =========================================================================
+     INTERACTIVE SITE TOUR CONTROLLER (Step-by-Step Feature Walkthrough)
+     ========================================================================= */
+  const STORAGE_TOUR_KEY = "levelup_tour_seen_v2";
+  const tourOverlay = document.getElementById('tourOverlay');
+  const tourSpotlightBox = document.getElementById('tourSpotlightBox');
+  const tourPopover = document.getElementById('tourPopover');
+  const tourStepBadge = document.getElementById('tourStepBadge');
+  const tourCloseBtn = document.getElementById('tourCloseBtn');
+  const tourPopoverTitle = document.getElementById('tourPopoverTitle');
+  const tourPopoverBody = document.getElementById('tourPopoverBody');
+  const tourDots = document.getElementById('tourDots');
+  const tourPrevBtn = document.getElementById('tourPrevBtn');
+  const tourNextBtn = document.getElementById('tourNextBtn');
+  const startTourBtn = document.getElementById('startTourBtn');
+
+  const tourSteps = [
+    {
+      target: '#card',
+      title: 'Daily Practice Card',
+      body: 'Each card introduces a key design concept with a core insight and an actionable exercise. Click "Draw new topic" to tear off and reveal your next sequential lesson!',
+      preferredPos: 'bottom'
+    },
+    {
+      target: '.selectors-container',
+      title: '13 Disciplines & 3 Levels',
+      body: 'Select any design field — from UI & Design Systems to UX Research, AI UX, CX, and Product Strategy. Switch difficulty between Beginner, Intermediate, and Advanced.',
+      preferredPos: 'bottom'
+    },
+    {
+      target: '.actions-row',
+      title: 'Action & 360° Resources',
+      body: 'Mark topics as "Read" to track mastery, navigate with "Prev", or tap "Resources" for curated NN/g articles, YouTube masterclasses, and Mobbin flows.',
+      preferredPos: 'top'
+    },
+    {
+      target: '#cornerTimerWidget',
+      title: 'Focus Timer & PiP Window',
+      body: 'Track your deep work with Stopwatch or Countdown modes. When you switch browser tabs, a mini Picture-in-Picture window automatically keeps ticking!',
+      preferredPos: 'top'
+    },
+    {
+      target: '#openHistoryBtn',
+      title: 'Reading Journal & PDF Export',
+      body: 'Keep track of all completed topics. Search your history, download a clean printable A4 PDF summary, or restore items from the 15-day Recycle Bin.',
+      preferredPos: 'bottom'
+    },
+    {
+      target: '#aiSetupBtn',
+      title: 'Infinite AI Topics via Gemini',
+      body: 'Connect your free Google Gemini API key to generate infinite, tailored lessons that dynamically expand on your past reading history.',
+      preferredPos: 'bottom'
+    }
+  ];
+
+  let currentTourStep = 0;
+
+  function renderTourStep(stepIndex) {
+    if (stepIndex < 0 || stepIndex >= tourSteps.length) {
+      closeTour();
+      return;
+    }
+    currentTourStep = stepIndex;
+    const step = tourSteps[stepIndex];
+    const targetEl = document.querySelector(step.target);
+
+    if (!targetEl) {
+      closeTour();
+      return;
+    }
+
+    tourOverlay.classList.add('open');
+
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+
+    setTimeout(() => {
+      const rect = targetEl.getBoundingClientRect();
+      const pad = 8;
+
+      tourSpotlightBox.style.top = Math.max(0, rect.top - pad) + 'px';
+      tourSpotlightBox.style.left = Math.max(0, rect.left - pad) + 'px';
+      tourSpotlightBox.style.width = (rect.width + pad * 2) + 'px';
+      tourSpotlightBox.style.height = (rect.height + pad * 2) + 'px';
+
+      tourStepBadge.textContent = `Feature ${stepIndex + 1} of ${tourSteps.length}`;
+      tourPopoverTitle.textContent = step.title;
+      tourPopoverBody.textContent = step.body;
+
+      tourDots.innerHTML = '';
+      tourSteps.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = `tour-dot ${i === stepIndex ? 'active' : ''}`;
+        tourDots.appendChild(dot);
+      });
+
+      tourPrevBtn.style.visibility = stepIndex === 0 ? 'hidden' : 'visible';
+      if (stepIndex === tourSteps.length - 1) {
+        tourNextBtn.textContent = 'Got it! 🎉';
+      } else {
+        tourNextBtn.textContent = 'Next →';
+      }
+
+      const popoverWidth = Math.min(320, window.innerWidth - 32);
+      let popoverTop = 0;
+      let popoverLeft = rect.left + (rect.width / 2) - (popoverWidth / 2);
+
+      popoverLeft = Math.max(16, Math.min(window.innerWidth - popoverWidth - 16, popoverLeft));
+
+      if (step.preferredPos === 'top' || (rect.bottom + 180 > window.innerHeight && rect.top > 200)) {
+        popoverTop = Math.max(16, rect.top - 180);
+      } else {
+        popoverTop = Math.min(window.innerHeight - 190, rect.bottom + 14);
+      }
+
+      tourPopover.style.top = popoverTop + 'px';
+      tourPopover.style.left = popoverLeft + 'px';
+    }, 100);
+  }
+
+  function startTour() {
+    currentTourStep = 0;
+    renderTourStep(0);
+  }
+
+  function closeTour() {
+    tourOverlay.classList.remove('open');
+    localStorage.setItem(STORAGE_TOUR_KEY, 'true');
+  }
+
+  if (tourNextBtn) {
+    tourNextBtn.addEventListener('click', () => {
+      if (currentTourStep < tourSteps.length - 1) {
+        renderTourStep(currentTourStep + 1);
+      } else {
+        closeTour();
+      }
+    });
+  }
+
+  if (tourPrevBtn) {
+    tourPrevBtn.addEventListener('click', () => {
+      if (currentTourStep > 0) {
+        renderTourStep(currentTourStep - 1);
+      }
+    });
+  }
+
+  if (tourCloseBtn) tourCloseBtn.addEventListener('click', closeTour);
+  if (startTourBtn) startTourBtn.addEventListener('click', startTour);
+
+  window.addEventListener('keydown', (e) => {
+    if (!tourOverlay.classList.contains('open')) return;
+    if (e.key === 'Escape') closeTour();
+    else if (e.key === 'ArrowRight') tourNextBtn.click();
+    else if (e.key === 'ArrowLeft') tourPrevBtn.click();
+  });
+
+  window.addEventListener('resize', () => {
+    if (tourOverlay.classList.contains('open')) {
+      renderTourStep(currentTourStep);
+    }
+  });
 
   // Initialization
   checkAiStatus();
