@@ -3314,7 +3314,7 @@
       case 'groq': return 'Groq (Llama 3.3)';
       case 'openrouter': return 'OpenRouter';
       case 'gemini':
-      default: return 'Google Gemini (Free Tier)';
+      default: return 'Google Gemini (Interactions API / Flash)';
     }
   }
 
@@ -3324,7 +3324,7 @@
     if (!key) {
       providerGuideBox.innerHTML = `
         <strong>💡 Smart Auto-Detection:</strong> Paste your API key from any provider below.<br/>
-        • <strong>Google Gemini:</strong> 100% free tier. <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--purple); font-weight:700; text-decoration:underline;">Get Free Gemini Key ↗</a><br/>
+        • <strong>Google Gemini:</strong> Supports Interactions API (<code>gemini-3.6-flash</code>, <code>gemini-2.5-flash</code>, <code>gemini-1.5-flash</code>). <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style="color:var(--purple); font-weight:700; text-decoration:underline;">Get Free Gemini Key ↗</a><br/>
         • <strong>OpenAI / Claude / Groq:</strong> Supported automatically.
       `;
     } else {

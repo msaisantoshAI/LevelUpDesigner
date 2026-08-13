@@ -108,17 +108,21 @@ function extractJsonObject(text) {
   }
 }
 
-// 1. Google Gemini API Caller (direct fast call to gemini-1.5-flash on v1beta)
+// 1. Google Gemini API Caller (supports both latest Interactions API and generateContent)
 async function callGeminiAPI(apiKey, prompt, customModel) {
   const cleanKey = (apiKey || '').trim();
   if (!cleanKey) throw new Error('No API key provided. Please paste your Google Gemini API key.');
 
-  // Direct fast priority list: standard production models on v1beta
+  // Priority list including new frontier models and fallback standard models
   const candidateModels = [
     customModel,
-    'gemini-1.5-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-pro',
+    'gemini-3-flash',
+    'gemini-2.5-flash',
     'gemini-2.0-flash',
-    'gemini-2.0-flash-exp',
+    'gemini-1.5-flash',
     'gemini-1.5-flash-latest',
     'gemini-1.5-pro'
   ].filter(Boolean).filter((m, i, arr) => arr.indexOf(m) === i);
@@ -126,6 +130,43 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
   let lastError = null;
 
   for (const model of candidateModels) {
+    // Strategy 1: Try new Gemini Interactions API
+    try {
+      const interactionPayload = JSON.stringify({
+        model: model,
+        input: prompt
+      });
+
+      const interactionOptions = {
+        hostname: 'generativelanguage.googleapis.com',
+        port: 443,
+        path: '/v1beta/interactions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': cleanKey,
+          'Content-Length': Buffer.byteLength(interactionPayload)
+        },
+        timeout: 25000
+      };
+
+      const parsedInteraction = await sendJsonRequest(interactionOptions, interactionPayload);
+      const outputText = parsedInteraction.output_text || 
+                         parsedInteraction.outputs?.[0]?.text || 
+                         parsedInteraction.output || 
+                         (typeof parsedInteraction.candidates?.[0]?.content?.parts?.[0]?.text === 'string' ? parsedInteraction.candidates[0].content.parts[0].text : null);
+
+      if (outputText) {
+        return extractJsonObject(outputText);
+      }
+    } catch (err1) {
+      const msg1 = (err1.message || '').toLowerCase();
+      if (msg1.includes('api key not valid') || msg1.includes('api_key_invalid') || msg1.includes('permission_denied')) {
+        throw err1;
+      }
+    }
+
+    // Strategy 2: Try generateContent API
     try {
       const postData = JSON.stringify({
         contents: [
@@ -157,34 +198,17 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
       if (rawText) {
         return extractJsonObject(rawText);
       }
-      throw new Error('Empty candidate part returned from Gemini');
-    } catch (err) {
-      lastError = err;
-      const msg = (err.message || '').toLowerCase();
-      // If API key is invalid or permission denied, throw immediately
-      if (msg.includes('api key not valid') || msg.includes('api_key_invalid') || msg.includes('permission_denied')) {
-        throw err;
+    } catch (err2) {
+      lastError = err2;
+      const msg2 = (err2.message || '').toLowerCase();
+      if (msg2.includes('api key not valid') || msg2.includes('api_key_invalid') || msg2.includes('permission_denied')) {
+        throw err2;
       }
-      // If model has limit: 0 or is unsupported/not found, try next candidate model
-      if (
-        msg.includes('limit: 0') ||
-        msg.includes('not found') || 
-        msg.includes('not supported') || 
-        msg.includes('no longer available') || 
-        msg.includes('404') || 
-        msg.includes('unsupported') ||
-        msg.includes('deprecated')
-      ) {
-        continue;
-      }
-      // If free tier rate limit was reached on this specific model, try next model before failing
-      if (msg.includes('quota') || msg.includes('rate-limit') || msg.includes('rate limit')) {
-        continue;
-      }
-      throw err;
+      continue;
     }
   }
-  throw lastError || new Error('Gemini API call failed across all endpoints');
+
+  throw lastError || new Error('Failed to generate with available Gemini models.');
 }
 
 // 2. OpenAI / Groq / OpenRouter / Custom Provider Caller
