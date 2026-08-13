@@ -2668,16 +2668,13 @@
 
     const itemLevel = topic.level || currentLevel;
     const itemField = topic.field || currentField;
-    const deck = getDeckForFieldAndLevel(itemField, itemLevel);
-    const stepNumber = topic.step || (deck.findIndex(t => t.id === topic.id) + 1) || 1;
-    const totalSteps = deck.length || 10;
 
-    document.getElementById('cardDomain').textContent = `Step ${stepNumber} of ${totalSteps} · ${topic.domain || currentField}`;
+    document.getElementById('cardDomain').textContent = topic.domain || currentField;
     document.getElementById('topicTitle').textContent = topic.t;
     document.getElementById('topicInsight').textContent = topic.insight;
     document.getElementById('topicPrompt').textContent = topic.prompt;
     
-    document.getElementById('cardLevelText').textContent = (itemLevel.charAt(0).toUpperCase() + itemLevel.slice(1)) + ' Path';
+    document.getElementById('cardLevelText').textContent = (itemLevel.charAt(0).toUpperCase() + itemLevel.slice(1)) + ' Tier';
     document.getElementById('cardFieldText').textContent = itemField;
 
     const stamp = document.getElementById('cardStamp');
@@ -3028,8 +3025,8 @@
       return `
         <div class="pdf-topic-card">
           <div class="pdf-topic-header">
-            <span class="pdf-step-badge">Lesson ${readHistory.length - index}</span>
-            <span class="pdf-meta">${item.level ? item.level.toUpperCase() : 'STUDY'} · ${item.field || 'Product Design'}</span>
+            <span class="pdf-step-badge">${item.domain || item.field || 'Design Concept'}</span>
+            <span class="pdf-meta">${item.level ? item.level.toUpperCase() : 'CORE'} · ${item.field || 'Product Design'}</span>
             <span class="pdf-date">Completed on ${item.dateRead || dateFormatted}</span>
           </div>
           <h2 class="pdf-topic-title">${item.title}</h2>

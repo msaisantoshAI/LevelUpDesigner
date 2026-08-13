@@ -108,65 +108,21 @@ function extractJsonObject(text) {
   }
 }
 
-// 1. Google Gemini API Caller (supports both latest Interactions API and generateContent)
+// 1. Google Gemini API Caller (Optimized for Fast Sub-Second Responses)
 async function callGeminiAPI(apiKey, prompt, customModel) {
   const cleanKey = (apiKey || '').trim();
   if (!cleanKey) throw new Error('No API key provided. Please paste your Google Gemini API key.');
 
-  // Priority list including new frontier models and fallback standard models
-  const candidateModels = [
+  const fastModels = [
     customModel,
-    'gemini-3.6-flash',
-    'gemini-3.5-flash-lite',
-    'gemini-3.1-pro',
-    'gemini-3-flash',
-    'gemini-2.5-flash',
-    'gemini-2.0-flash',
     'gemini-1.5-flash',
-    'gemini-1.5-flash-latest',
-    'gemini-1.5-pro'
+    'gemini-2.0-flash',
+    'gemini-1.5-flash-latest'
   ].filter(Boolean).filter((m, i, arr) => arr.indexOf(m) === i);
 
   let lastError = null;
 
-  for (const model of candidateModels) {
-    // Strategy 1: Try new Gemini Interactions API
-    try {
-      const interactionPayload = JSON.stringify({
-        model: model,
-        input: prompt
-      });
-
-      const interactionOptions = {
-        hostname: 'generativelanguage.googleapis.com',
-        port: 443,
-        path: '/v1beta/interactions',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': cleanKey,
-          'Content-Length': Buffer.byteLength(interactionPayload)
-        },
-        timeout: 25000
-      };
-
-      const parsedInteraction = await sendJsonRequest(interactionOptions, interactionPayload);
-      const outputText = parsedInteraction.output_text || 
-                         parsedInteraction.outputs?.[0]?.text || 
-                         parsedInteraction.output || 
-                         (typeof parsedInteraction.candidates?.[0]?.content?.parts?.[0]?.text === 'string' ? parsedInteraction.candidates[0].content.parts[0].text : null);
-
-      if (outputText) {
-        return extractJsonObject(outputText);
-      }
-    } catch (err1) {
-      const msg1 = (err1.message || '').toLowerCase();
-      if (msg1.includes('api key not valid') || msg1.includes('api_key_invalid') || msg1.includes('permission_denied')) {
-        throw err1;
-      }
-    }
-
-    // Strategy 2: Try generateContent API
+  for (const model of fastModels) {
     try {
       const postData = JSON.stringify({
         contents: [
@@ -177,7 +133,7 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
         ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 800
+          maxOutputTokens: 700
         }
       });
 
@@ -190,7 +146,7 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
           'Content-Type': 'application/json',
           'Content-Length': Buffer.byteLength(postData)
         },
-        timeout: 25000
+        timeout: 6000 // Fast 6 second timeout
       };
 
       const parsed = await sendJsonRequest(options, postData);
@@ -198,17 +154,17 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
       if (rawText) {
         return extractJsonObject(rawText);
       }
-    } catch (err2) {
-      lastError = err2;
-      const msg2 = (err2.message || '').toLowerCase();
-      if (msg2.includes('api key not valid') || msg2.includes('api_key_invalid') || msg2.includes('permission_denied')) {
-        throw err2;
+    } catch (err) {
+      lastError = err;
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('api key not valid') || msg.includes('api_key_invalid') || msg.includes('permission_denied')) {
+        throw err;
       }
       continue;
     }
   }
 
-  throw lastError || new Error('Failed to generate with available Gemini models.');
+  throw lastError || new Error('Gemini API call timed out or failed.');
 }
 
 // 2. OpenAI / Groq / OpenRouter / Custom Provider Caller
