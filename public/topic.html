@@ -1412,6 +1412,30 @@
   }
   .clear-all-btn:hover { background: #A82828; color: #FFF; }
 
+  .drawer-export-pdf-btn {
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    color: #FFF;
+    font-family: var(--font-slab);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: none; /* Aa mode */
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .drawer-export-pdf-btn:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #FFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(168, 118, 30, 0.25);
+  }
+
   /* Universal AI Settings Modal */
   .gemini-modal-overlay, .confirm-modal-overlay {
     position: fixed;
@@ -1956,6 +1980,18 @@
 
       <div class="drawer-footer" id="drawerFooter">
         <button class="clear-all-btn" id="clearHistoryBtn">Clear Journal</button>
+        <button class="drawer-export-pdf-btn" id="downloadJournalPdfBtn" title="Download formatted PDF of your completed learning journal">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Download PDF Journal
+        </button>
+      </div>
+
+      <div class="drawer-footer" id="trashDrawerFooter" style="display:none; justify-content:flex-end;">
+        <button class="clear-all-btn" id="emptyTrashBtn" style="background:#A82828; color:#fff;">🗑️ Empty Recycle Bin</button>
       </div>
     </div>
   </div>
@@ -2507,17 +2543,28 @@
     const deck = getDeckForFieldAndLevel(currentField, currentLevel);
     const readIds = new Set(readHistory.map(h => h.id));
     
-    // Find the next unread step in strict numerical curriculum sequence
-    const unread = deck.filter(t => !readIds.has(t.id));
-    let chosen = null;
-    if (unread.length > 0) {
-      chosen = unread[0]; // Strict sequential order!
-    } else {
-      // If entire level is completed, find next lesson in sequence or wrap around to step 1
-      const currentIndex = deck.findIndex(t => t.id === excludeId);
-      const nextIndex = (currentIndex + 1) % deck.length;
-      chosen = deck[nextIndex] || deck[0];
+    // Find current index in deck
+    let currentIndex = -1;
+    if (excludeId) {
+      currentIndex = deck.findIndex(t => t.id === excludeId);
     }
+    
+    let chosen = null;
+    
+    // 1. If currently showing a topic in this deck, advance to the next step
+    if (currentIndex >= 0) {
+      const nextIndex = (currentIndex + 1) % deck.length;
+      chosen = deck[nextIndex];
+    } else {
+      // 2. Initial load or new deck: pick the first unread step, or step 1
+      const unread = deck.filter(t => !readIds.has(t.id));
+      if (unread.length > 0) {
+        chosen = unread[0];
+      } else {
+        chosen = deck[0];
+      }
+    }
+
     if (!chosen) {
       chosen = {
         id: "gen-" + Date.now(),
@@ -2766,6 +2813,7 @@
     tabActiveJournal.classList.add('active');
     tabRecycleBin.classList.remove('active');
     document.getElementById('drawerFooter').style.display = 'flex';
+    document.getElementById('trashDrawerFooter').style.display = 'none';
     document.getElementById('drawerProgressWrap').style.display = 'block';
     renderHistoryList(historySearchInput.value);
   });
@@ -2775,6 +2823,7 @@
     tabRecycleBin.classList.add('active');
     tabActiveJournal.classList.remove('active');
     document.getElementById('drawerFooter').style.display = 'none';
+    document.getElementById('trashDrawerFooter').style.display = 'flex';
     document.getElementById('drawerProgressWrap').style.display = 'none';
     renderHistoryList(historySearchInput.value);
   });
@@ -2879,9 +2928,17 @@
           <div class="history-card-title">${item.title}</div>
           <div class="history-card-footer">
             <span style="font-size:11px; color:var(--ink-soft);">${item.domain || 'Design'}</span>
-            <button class="card-action-btn restore" data-id="${item.id}">Restore</button>
+            <div style="display:flex; gap:6px;">
+              <button class="card-action-btn delete" data-id="${item.id}" title="Permanently delete from storage">Delete Permanently</button>
+              <button class="card-action-btn restore" data-id="${item.id}" title="Restore back to journal">Restore</button>
+            </div>
           </div>
         `;
+
+        card.querySelector('.card-action-btn.delete').addEventListener('click', (e) => {
+          e.stopPropagation();
+          deletePermanently(item.id);
+        });
 
         card.querySelector('.card-action-btn.restore').addEventListener('click', (e) => {
           e.stopPropagation();
@@ -2902,6 +2959,7 @@
     saveHistory();
     renderHistoryList(historySearchInput.value);
     if (currentCardTopic && currentCardTopic.id === id) fillCardData(currentCardTopic);
+    showToast('Topic moved to 15-Day Recycle Bin', 'info');
   }
 
   function restoreFromTrash(id) {
@@ -2913,7 +2971,271 @@
     saveHistory();
     renderHistoryList(historySearchInput.value);
     if (currentCardTopic && currentCardTopic.id === id) fillCardData(currentCardTopic);
+    showToast('Topic restored to Journal', 'success');
   }
+
+  function deletePermanently(id) {
+    if (confirm("Permanently delete this topic from Recycle Bin? This action cannot be undone.")) {
+      trashHistory = trashHistory.filter(h => h.id !== id);
+      saveHistory();
+      renderHistoryList(historySearchInput.value);
+      showToast('Topic permanently deleted', 'info');
+    }
+  }
+
+  function emptyRecycleBin() {
+    if (trashHistory.length === 0) {
+      showToast('Recycle Bin is already empty', 'info');
+      return;
+    }
+    if (confirm(`Permanently delete all ${trashHistory.length} items from Recycle Bin? This action cannot be undone.`)) {
+      trashHistory = [];
+      saveHistory();
+      renderHistoryList(historySearchInput.value);
+      showToast('Recycle Bin emptied', 'success');
+    }
+  }
+
+  const emptyTrashBtn = document.getElementById('emptyTrashBtn');
+  if (emptyTrashBtn) emptyTrashBtn.addEventListener('click', emptyRecycleBin);
+
+  /* Export Learning Journal to Printable PDF */
+  function downloadJournalAsPdf() {
+    if (readHistory.length === 0) {
+      showToast('Your journal is currently empty. Mark lessons as read to export your learning PDF.', 'warning');
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=860,height=920');
+    if (!printWindow) {
+      showToast('Popup blocked. Please allow popups to save your PDF.', 'warning');
+      return;
+    }
+
+    const now = new Date();
+    const dateFormatted = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    let topicsHtml = readHistory.map((item, index) => {
+      const deck = getDeckForFieldAndLevel(item.field || currentField, item.level || currentLevel);
+      const matched = deck.find(t => t.id === item.id);
+      const insight = (matched && matched.insight) ? matched.insight : 'Mastered core concept in daily study practice.';
+      const prompt = (matched && matched.prompt) ? matched.prompt : 'Applied to live product design flows.';
+      const resources = matched ? ensureTopicResources(matched) : ensureTopicResources({ t: item.title, domain: item.domain || currentField });
+
+      const articlesList = (resources.articles || []).slice(0, 3).map(a => `<li><a href="${a.url}" target="_blank">${a.title}</a></li>`).join('');
+      const videosList = (resources.videos || []).slice(0, 2).map(v => `<li><a href="${v.url}" target="_blank">${v.title}</a></li>`).join('');
+
+      return `
+        <div class="pdf-topic-card">
+          <div class="pdf-topic-header">
+            <span class="pdf-step-badge">Lesson ${readHistory.length - index}</span>
+            <span class="pdf-meta">${item.level ? item.level.toUpperCase() : 'STUDY'} · ${item.field || 'Product Design'}</span>
+            <span class="pdf-date">Completed on ${item.dateRead || dateFormatted}</span>
+          </div>
+          <h2 class="pdf-topic-title">${item.title}</h2>
+          <div class="pdf-section">
+            <div class="pdf-section-title">💡 Core Pedagogical Insight</div>
+            <p class="pdf-text">${insight}</p>
+          </div>
+          <div class="pdf-section">
+            <div class="pdf-section-title">🎯 Practical Exercise & Action Prompt</div>
+            <p class="pdf-prompt">${prompt}</p>
+          </div>
+          <div class="pdf-resources-box">
+            <div class="pdf-res-header">Curated 360° Knowledge Links</div>
+            <ul class="pdf-links">${articlesList}${videosList}</ul>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>LevelUP Designers — My Learning Journal (${dateFormatted})</title>
+        <meta charset="UTF-8" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Roboto+Slab:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <style>
+          @page { size: A4; margin: 16mm 14mm 16mm 14mm; }
+          body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #FFFDF9;
+            color: #111A24;
+            margin: 0;
+            padding: 24px;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .pdf-container { max-width: 780px; margin: 0 auto; }
+          .pdf-masthead {
+            border-bottom: 2.5px solid #A8761E;
+            padding-bottom: 14px;
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+          }
+          .pdf-brand {
+            font-family: 'Fraunces', serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #111A24;
+            line-height: 1.1;
+          }
+          .pdf-subtitle {
+            font-family: 'Roboto Slab', serif;
+            font-size: 13px;
+            color: #7D6A53;
+            margin-top: 4px;
+          }
+          .pdf-stats-badge {
+            text-align: right;
+            font-size: 12px;
+            font-weight: 700;
+            color: #111A24;
+            background: #F6F3EC;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: 1px solid #D5CBBA;
+          }
+          .pdf-topic-card {
+            border: 1.5px solid #D5CBBA;
+            background: #FFF;
+            border-radius: 8px;
+            padding: 16px 18px;
+            margin-bottom: 18px;
+            page-break-inside: avoid;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+          }
+          .pdf-topic-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 700;
+            color: #7D6A53;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #E5DEC9;
+            padding-bottom: 6px;
+          }
+          .pdf-step-badge {
+            background: #FAF7F0;
+            color: #A8761E;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #DFCEB0;
+          }
+          .pdf-topic-title {
+            font-family: 'Fraunces', serif;
+            font-size: 19px;
+            font-weight: 700;
+            color: #111A24;
+            margin: 0 0 10px 0;
+            line-height: 1.25;
+          }
+          .pdf-section { margin-bottom: 10px; }
+          .pdf-section-title {
+            font-family: 'Roboto Slab', serif;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #7D6A53;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 3px;
+          }
+          .pdf-text {
+            font-size: 13px;
+            line-height: 1.55;
+            color: #2D3A47;
+            margin: 0;
+          }
+          .pdf-prompt {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: #4B5563;
+            background: #FAF7F0;
+            padding: 8px 12px;
+            border-left: 3px solid #A8761E;
+            border-radius: 0 4px 4px 0;
+            margin: 0;
+            font-style: italic;
+          }
+          .pdf-resources-box {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid #F0EAE1;
+          }
+          .pdf-res-header {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #552F9E;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+          }
+          .pdf-links {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: #1B733F;
+          }
+          .pdf-links a { color: #1B733F; text-decoration: none; }
+          .pdf-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 14px;
+            border-top: 1px solid #D5CBBA;
+            font-size: 11px;
+            color: #7D6A53;
+          }
+          @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="pdf-container">
+          <div class="no-print" style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; background:#111A24; color:#FFF; padding:12px 18px; border-radius:8px;">
+            <span>📄 Print or Save your Learning Journal as PDF:</span>
+            <button onclick="window.print()" style="background:#A8761E; color:#FFF; border:none; padding:8px 18px; border-radius:6px; font-weight:700; cursor:pointer; font-size:13px;">Save / Print PDF 🖨️</button>
+          </div>
+
+          <div class="pdf-masthead">
+            <div>
+              <div class="pdf-brand">LevelUP Designers</div>
+              <div class="pdf-subtitle">Personal Study Journal & Mastered Curriculum Record</div>
+            </div>
+            <div class="pdf-stats-badge">
+              <div>Total Mastered: ${readHistory.length} Lessons</div>
+              <div style="font-size:10px; color:#7D6A53; margin-top:2px;">Generated ${dateFormatted}</div>
+            </div>
+          </div>
+
+          <div class="pdf-content">
+            ${topicsHtml}
+          </div>
+
+          <div class="pdf-footer">
+            LevelUP Designers · Created by @Saisantosh · Tracked from https://github.com/msaisantoshAI/LevelUp-Designer
+          </div>
+        </div>
+        <script>
+          setTimeout(() => { window.print(); }, 600);
+        <\/script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
+
+  const downloadJournalPdfBtn = document.getElementById('downloadJournalPdfBtn');
+  if (downloadJournalPdfBtn) downloadJournalPdfBtn.addEventListener('click', downloadJournalAsPdf);
 
   function openHistory() {
     renderHistoryList();
@@ -3186,7 +3508,9 @@
     currentField = e.target.value;
     localStorage.setItem(STORAGE_FIELD_KEY, currentField);
     updateMasteryProgress();
+    currentCardTopic = null;
     renderCurrentOrNext(true);
+    showToast(`Switched to ${currentField}`, 'info');
   });
 
   document.querySelectorAll('.level-btn').forEach(btn => {
@@ -3195,7 +3519,9 @@
       btn.classList.add('active');
       currentLevel = btn.dataset.level;
       updateMasteryProgress();
+      currentCardTopic = null;
       renderCurrentOrNext(true);
+      showToast(`Switched to ${currentLevel.toUpperCase()} tier`, 'info');
     });
   });
 
@@ -3211,6 +3537,7 @@
     currentLevel = nextLevel;
     document.querySelectorAll('.level-btn').forEach(b => b.classList.toggle('active', b.dataset.level === currentLevel));
     updateMasteryProgress();
+    currentCardTopic = null;
     renderCurrentOrNext(true);
   });
 

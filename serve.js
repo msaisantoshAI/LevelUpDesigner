@@ -117,6 +117,8 @@ async function callGeminiAPI(apiKey, prompt, customModel) {
   const candidateModels = [
     customModel,
     'gemini-1.5-flash',
+    'gemini-2.0-flash',
+    'gemini-2.0-flash-exp',
     'gemini-1.5-flash-latest',
     'gemini-1.5-pro'
   ].filter(Boolean).filter((m, i, arr) => arr.indexOf(m) === i);
