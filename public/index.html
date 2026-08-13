@@ -1885,18 +1885,26 @@
   
   /* Tablet (iPad & Medium screens: 601px - 899px) */
   @media (max-width: 899px) and (min-width: 601px) {
-    .site-header { padding: 0 20px; height: 50px; }
-    .desk { max-width: 95%; padding: 8px 16px 10px; }
-    .selectors-container { gap: 10px; padding: 8px 12px; }
+    .site-header { padding: 0 20px; height: 52px; }
+    .desk { max-width: 92%; padding: 12px 18px 20px; }
+    .selectors-container { gap: 10px; padding: 10px 14px; }
     .field-select { font-size: 13px; }
-    .level-btn { font-size: 11.5px; padding: 6px 10px; }
+    .level-btn { font-size: 12px; padding: 6px 10px; }
     .topic-title { font-size: 23px; }
     .topic-insight-box { font-size: 13.5px; }
-    .creator-corner-badge { bottom: 8px; right: 12px; font-size: 11px; }
+    .creator-corner-badge { bottom: 10px; right: 14px; font-size: 11px; }
   }
 
-  /* Mobile Devices (< 600px) — True Mobile-First Architecture */
-  @media (max-width: 600px) {
+  /* Mobile Devices (<= 768px) — Clean, Spacious, Decent Mobile Layout */
+  @media (max-width: 768px) {
+    /* 1. Strictly remove all background stickers on mobile */
+    #stickersLayer, .stickers-layer, .designer-sticker {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+    }
+
     html, body {
       height: auto;
       min-height: 100vh;
@@ -1904,55 +1912,73 @@
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      background-color: #F8F5EE;
     }
 
     .site-header {
-      padding: 0 12px;
-      height: 52px;
+      padding: 0 16px;
+      height: 56px;
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(255, 253, 249, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(255, 253, 249, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid #E6DEC9;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     }
 
     .brand-badge {
-      font-size: 13px;
-      padding: 3px 8px 3px 5px;
-      gap: 6px;
+      font-size: 13.5px;
+      padding: 4px 10px 4px 6px;
+      gap: 7px;
+      border-radius: 999px;
     }
     .brand-logo-img { width: 22px; height: 22px; }
 
     .header-actions { gap: 6px; }
-    .ai-status-pill, .history-trigger-btn {
-      font-size: 11px;
-      padding: 6px 10px;
-      border-radius: 6px;
+    .tour-trigger-btn, .ai-status-pill, .history-trigger-btn {
+      font-size: 11.5px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-weight: 600;
     }
 
+    /* Desk Container with Generous Breathing Space */
     .desk {
       height: auto;
       min-height: auto;
-      padding: 10px 12px 95px;
-      gap: 12px;
+      padding: 20px 16px 115px;
+      gap: 16px;
       justify-content: flex-start;
-      max-width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
       width: 100%;
       box-sizing: border-box;
     }
 
-    .masthead { margin-bottom: 2px; }
-    .masthead h1 { font-size: 21px; line-height: 1.25; }
-    .masthead .eyebrow { font-size: 11.5px; }
+    .masthead { margin-bottom: 4px; }
+    .masthead h1 {
+      font-size: 23px;
+      line-height: 1.25;
+      letter-spacing: -0.015em;
+      margin-bottom: 4px;
+    }
+    .masthead .eyebrow {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
 
+    /* Selectors Box with Clean White Space */
     .selectors-container {
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
-      padding: 10px;
-      border-radius: 8px;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #FFFDF9;
+      border: 1px solid #E2D9C8;
+      box-shadow: 0 2px 8px rgba(17, 26, 36, 0.03);
       width: 100%;
       box-sizing: border-box;
     }
@@ -1961,12 +1987,21 @@
       width: 100%;
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
+      gap: 5px;
+    }
+    .field-label {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--ink-muted);
     }
     .field-select {
       width: 100%;
-      font-size: 13px;
-      padding: 9px 10px;
+      font-size: 13.5px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #D5CBBA;
+      background-color: #FAF7F0;
+      color: var(--ink);
     }
 
     .level-select-row { width: 100%; }
@@ -1974,98 +2009,125 @@
       width: 100%;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 4px;
+      gap: 6px;
     }
     .level-btn {
       width: 100%;
-      font-size: 11.5px;
-      padding: 8px 4px;
+      font-size: 12px;
+      padding: 9px 4px;
+      border-radius: 6px;
       text-align: center;
+      font-weight: 600;
     }
 
     .mastery-progress-card {
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 8px;
       width: 100%;
       box-sizing: border-box;
+      background: #FAF7F0;
+      border: 1px solid #E8E0CE;
     }
+    .mastery-meta-row { font-size: 11.5px; margin-bottom: 6px; }
+    .mastery-bar-track { height: 6px; }
 
+    /* Learning Card Stage with Generous Margins & Clean Elevation */
     .card-stage {
       width: 100%;
-      min-height: 270px;
+      min-height: 290px;
+      margin-top: 2px;
     }
 
     .card {
-      padding: 18px 14px 14px;
-      min-height: 270px;
-      border-radius: 10px;
+      padding: 22px 18px 18px;
+      min-height: 290px;
+      border-radius: 12px;
+      border: 1.5px solid #D5CBBA;
+      background: #FFFDF9;
+      box-shadow: 0 4px 16px rgba(17, 26, 36, 0.04);
       width: 100%;
       box-sizing: border-box;
     }
 
-    .card-domain-badge { font-size: 10.5px; }
-    .card-status-pill { font-size: 10px; padding: 2px 7px; }
-    .topic-title { font-size: 19px; line-height: 1.25; margin-bottom: 10px; }
-    .topic-insight-box { font-size: 12.5px; padding: 8px 10px; margin-bottom: 10px; }
-    .topic-action-prompt { font-size: 12px; padding: 7px 10px; }
-    .card-foot { font-size: 11px; padding-top: 10px; }
+    .card-domain-badge { font-size: 11px; padding: 4px 9px; }
+    .card-status-pill { font-size: 10px; padding: 3px 8px; }
+    .topic-title {
+      font-size: 20px;
+      line-height: 1.3;
+      margin: 10px 0 12px;
+      font-weight: 600;
+    }
+    .topic-insight-box {
+      font-size: 13px;
+      line-height: 1.6;
+      padding: 11px 13px;
+      margin: 10px 0 12px;
+      border-radius: 0 6px 6px 0;
+      background: #FAF7F0;
+      border-left: 3.5px solid var(--gold);
+    }
+    .topic-action-prompt {
+      font-size: 12.5px;
+      line-height: 1.55;
+      padding: 8px 12px;
+    }
+    .card-foot {
+      font-size: 11px;
+      padding-top: 12px;
+      margin-top: 10px;
+    }
 
     /* 2x2 Thumb-Friendly Mobile Action Button Grid */
     .actions-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      gap: 10px;
       width: 100%;
+      margin-top: 4px;
       box-sizing: border-box;
     }
-    .prev-btn {
-      grid-column: 1 / 2;
-      padding: 12px 10px;
+    .prev-btn, .draw-btn, .mark-read-btn, .resources-action-btn {
+      height: 48px;
+      border-radius: 8px;
       font-size: 13px;
-      height: 44px;
+      padding: 10px 8px;
       width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
     }
-    .draw-btn {
-      grid-column: 2 / 3;
-      padding: 12px 10px;
-      font-size: 13px;
-      height: 44px;
-      width: 100%;
-    }
-    .mark-read-btn {
-      grid-column: 1 / 2;
-      padding: 12px 10px;
-      font-size: 13px;
-      height: 44px;
-      width: 100%;
-    }
-    .resources-action-btn {
-      grid-column: 2 / 3;
-      padding: 12px 10px;
-      font-size: 13px;
-      height: 44px;
-      width: 100%;
-    }
+    .prev-btn { grid-column: 1 / 2; }
+    .draw-btn { grid-column: 2 / 3; }
+    .mark-read-btn { grid-column: 1 / 2; }
+    .resources-action-btn { grid-column: 2 / 3; }
 
-    .footer-row { margin-top: 2px; }
-    .sound-toggle { font-size: 11px; padding: 4px 8px; }
+    .footer-row { margin-top: 6px; }
+    .sound-toggle { font-size: 11.5px; padding: 6px 12px; }
 
     /* Mobile Corner Timer & Creator Badge Placement */
     .corner-timer-widget {
-      bottom: 42px;
-      right: 10px;
-      padding: 4px 8px;
-      font-size: 11px;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      bottom: 46px;
+      right: 12px;
+      padding: 5px 10px;
+      font-size: 11.5px;
+      border-radius: 8px;
+      background: #FFFDF9;
+      border: 1px solid #D5CBBA;
+      box-shadow: 0 4px 14px rgba(17, 26, 36, 0.08);
     }
-    .timer-digits { font-size: 11.5px; }
+    .timer-digits { font-size: 12px; }
 
     .creator-corner-badge {
-      bottom: 8px;
-      right: 10px;
-      padding: 4px 8px;
-      font-size: 10.5px;
+      bottom: 10px;
+      right: 12px;
+      padding: 5px 10px;
+      font-size: 11px;
+      border-radius: 999px;
+      background: #FFFDF9;
+      border: 1px solid #D5CBBA;
+      box-shadow: 0 3px 10px rgba(17, 26, 36, 0.06);
     }
 
     /* Mobile Full-Screen Drawers & Modals */
@@ -2077,7 +2139,8 @@
     .ai-modal, .resources-modal, .confirm-modal {
       width: calc(100% - 24px);
       max-height: 90vh;
-      padding: 18px 16px;
+      padding: 20px 16px;
+      border-radius: 10px;
     }
   }
 </style>
@@ -4477,6 +4540,13 @@ Respond strictly in valid JSON with no backticks matching this schema:
     if (!stickersContainer) return;
     stickersContainer.innerHTML = '';
     stickerObjects.length = 0;
+
+    // Never render or compute stickers on mobile screens (<= 768px)
+    if (window.innerWidth <= 768) {
+      stickersContainer.style.display = 'none';
+      return;
+    }
+    stickersContainer.style.display = 'block';
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
