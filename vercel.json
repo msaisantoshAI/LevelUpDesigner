@@ -1,9 +1,11 @@
 {
   "version": 2,
+  "framework": null,
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/topic", "destination": "/index.html" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
